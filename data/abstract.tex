@@ -3,37 +3,121 @@
 % 中英文摘要和关键字
 
 \begin{abstract}
-  论文的摘要是对论文研究内容和成果的高度概括。
-  摘要应对论文所研究的问题及其研究目的进行描述，对研究方法和过程进行简单介绍，对研究成果和所得结论进行概括。
-  摘要应具有独立性和自明性，其内容应包含与论文全文同等量的主要信息。
-  使读者即使不阅读全文，通过摘要就能了解论文的总体内容和主要成果。
+  随着信息化和工业化的融合，物联网和工业互联网蓬勃发展，由此产生了以
+  时间序列为代表的大量工业大数据。时间序列中蕴含着很多有价值的模式，
+  对称模式作为一种具有前后对应特征的时间点序列，在各类时间序列中广泛存在。
+  挖掘对称模式对于行为分析、轨迹跟踪、异常检测等领域具有重要的研究价值。
+  考虑到大规模的时间序列数据给计算资源和运行效率带来的挑战，
+  本文将研究一种时间和空间效率均较为高效的对称模式挖掘方法来应对上述问题。
 
-  论文摘要的书写应力求精确、简明。
-  切忌写成对论文书写内容进行提要的形式，尤其要避免“第 1 章……；第 2 章……；……”这种或类似的陈述方式。
+  对称模式涉及到分段时间序列的对比与匹配。
+  因此，时间子序列的相似性度量对对称模式挖掘算法的时间性能具有决定性作用。
+  一种简单而有效的序列相似性度量方法是欧式距离。
+  但是工业应用中时间序列的数据量往往高达几十甚至上百GB，
+  基于欧式距离的相似性检索方法计算效率仍然堪忧。
+  因此，基于动态时间规整（DTW）算法的启发，本文提出了一种能够
+  在$O\left( \left| X \right| \times w \right)$的时间复杂度内
+  挖掘出时间序列对称模式的方法。
+  具体来说，给定长度约束作为对称模式窗口大小，
+  基于区间动态规划算法计算出对称子序列，
+  进而依据贪心策略选择数量最多且不重叠对称子序列组成的对称模式。
+  通过实验证明，本文提出的对称模式挖掘方法不但在模式挖掘效果上优于
+  基于欧式距离的挖掘方法，而且相比基于DTW距离的挖掘方法在效率上
+  有了100多倍的提升。
 
-  关键词是为了文献标引工作、用以表示全文主要内容信息的单词或术语。
-  关键词不超过 5 个，每个关键词中间用分号分隔。
+  本文还研究了对称模式挖掘算法在流式时间序列和变长对称模式场景下的扩展。
+  流式时间序列可视为一个随时间延续而无限增长的动态数据集合，
+  检测流式时间序列的对称性需要满足实时性。
+  本文利用改进DTW算法已计算出的状态优化流式算法，
+  将每个时间点对称性的计算复杂度由$O\left( w^2 \right)$
+  降为了$O\left( w \right)$。此外，同一个时间序列中很可能存在
+  不同长度的对称模式，因此，本文利用数据点差分的分布特征，
+  设计了能自动调节大小的对称模式窗口。通过实验证明，
+  增加了自适应窗口的对称模式挖掘方法比原始方法和其他方法所挖掘出的对称模式
+  完整性更高。
 
+  通过研究时间序列对称模式挖掘发现，基于改进DTW算法的对称模式挖掘方法
+  不但在模式挖掘效果上优于基于欧式距离的挖掘方法，在性能上也大幅优于
+  基于DTW的挖掘方法。最后本文把所提算法进行了系统实现并集成到
+  IoTDB-Quality中，完善了工具的功能并加快了工具挖掘对称模式的效率。
+  
   % 关键词用“英文逗号”分隔，输出时会自动处理为正确的分隔符
   \thusetup{
-    keywords = {关键词 1, 关键词 2, 关键词 3, 关键词 4, 关键词 5},
+    keywords = {时间序列, 对称模式, 相似性度量, 动态规划},
   }
 \end{abstract}
 
 \begin{abstract*}
-  An abstract of a dissertation is a summary and extraction of research work and contributions.
-  Included in an abstract should be description of research topic and research objective, brief introduction to methodology and research process, and summary of conclusion and contributions of the research.
-  An abstract should be characterized by independence and clarity and carry identical information with the dissertation.
-  It should be such that the general idea and major contributions of the dissertation are conveyed without reading the dissertation.
+  With the integration of informatization and industrialization, 
+  the Internet of Things and the Industrial Internet have 
+  flourished, resulting in a large amount of industrial big data 
+  represented by time series. There are many valuable patterns 
+  in time series. Symmetric patterns, as a series of time points 
+  with corresponding features before and after, widely exist 
+  in all kinds of time series. Mining symmetric patterns has 
+  important research value for behavior analysis, trajectory 
+  tracking, anomaly detection and other fields. Considering 
+  the challenges brought by large-scale time series data to 
+  computing resources and operational efficiency, this paper 
+  will study a time- and space-efficient symmetric pattern 
+  mining method to deal with the above problems.
 
-  An abstract should be concise and to the point.
-  It is a misunderstanding to make an abstract an outline of the dissertation and words “the first chapter”, “the second chapter” and the like should be avoided in the abstract.
+  Symmetric patterns involve the comparison and matching of 
+  segmented time series. Therefore, the similarity measure 
+  of temporal subsequences plays a decisive role in the 
+  temporal performance of the symmetric pattern mining algorithm. 
+  A simple and effective measure of sequence similarity is 
+  Euclidean distance. However, the amount of time series data 
+  in industrial applications is often as high as tens or even 
+  hundreds of GB, and the computational efficiency of the 
+  similarity retrieval method based on Euclidean distance is 
+  still worrying. Therefore, based on the inspiration of 
+  the dynamic time warping (DTW) algorithm, this paper 
+  proposes a method that can mine symmetric patterns of 
+  time series within the time complexity of 
+  $O\left( \left| X \right| \times w \right)$. 
+  Specifically, given the length constraint as the size of 
+  the symmetric pattern window, the symmetric subsequence 
+  is calculated based on the interval dynamic programming 
+  algorithm, and then the symmetric pattern composed of 
+  the largest number of non-overlapping symmetric subsequences 
+  is selected according to the greedy strategy. Experiments 
+  show that the symmetric pattern mining method proposed 
+  in this paper is not only better than the mining method 
+  based on Euclidean distance in pattern mining effect, 
+  but also has more than 100 times improvement in efficiency 
+  compared with the mining method based on DTW distance.
 
-  Keywords are terms used in a dissertation for indexing, reflecting core information of the dissertation.
-  An abstract may contain a maximum of 5 keywords, with semi-colons used in between to separate one another.
+  This paper also investigates the extension of the symmetric 
+  pattern mining algorithm to streaming time series and 
+  variable-length symmetric pattern scenarios. Streaming time 
+  series can be regarded as a dynamic data collection that 
+  grows infinitely with time. The symmetry of streaming time 
+  series needs to be real-time. This paper uses the 
+  state-optimized streaming algorithm calculated by 
+  the improved DTW algorithm to reduce the computational 
+  complexity of symmetry at each time point from 
+  $O\left( w^2 \right)$ to $O\left( w \right)$. 
+  In addition, there may be symmetric patterns of different 
+  lengths in the same time series. Therefore, this paper uses 
+  the distribution characteristics of data point differences 
+  to design a symmetric pattern window that can automatically 
+  adjust the size. Experiments show that the symmetric pattern 
+  mining method with an adaptive window is more complete than 
+  the original method and other methods.
 
+  By studying symmetric pattern mining of time series, 
+  we found that the symmetric pattern mining method based on 
+  the improved DTW algorithm is not only better than the mining 
+  method based on Euclidean distance in pattern mining effect, 
+  but also significantly better than the mining method based 
+  on DTW in performance. Finally, this paper systematically 
+  implements the proposed algorithm and integrates it into 
+  IoTDB-Quality, which improves the function of the tool and 
+  accelerates the efficiency of the tool to mine symmetric 
+  patterns.
   % Use comma as separator when inputting
   \thusetup{
-    keywords* = {keyword 1, keyword 2, keyword 3, keyword 4, keyword 5},
+    keywords* = {time series, symmetric pattern, similarity measure, dynamic programming},
   }
 \end{abstract*}

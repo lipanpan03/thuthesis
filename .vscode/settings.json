@@ -1,82 +1,87 @@
 {
     "latex-workshop.latex.recipes": [
         {
-            "name": "latexmk for thuthesis",
+            "name": "xelatex",
             "tools": [
-                "xetex-thuthesis",
-                "latexmk-xelatex"
+                "xelatex"
             ]
         },
         {
-            "name": "make thesis",
+            "name": "latexmk",
             "tools": [
-                "make-thesis"
+                "latexmk"
+            ]
+        },
+        {
+            "name": "pdflatex -> bibtex -> pdflatex*2",
+            "tools": [
+                "pdflatex",
+                "bibtex",
+                "pdflatex",
+                "pdflatex"
             ]
         }
     ],
     "latex-workshop.latex.tools": [
         {
-            "name": "xetex-thuthesis",
-            "command": "xetex",
-            "args": [
-                "-file-line-error",
-                "-halt-on-error",
-                "-interaction=nonstopmode",
-                "thuthesis.ins"
-            ],
-            "env": {}
-        },
-        {
-            "name": "latexmk-xelatex",
+            "name": "latexmk",
             "command": "latexmk",
             "args": [
-                "-xelatex",
-                "-file-line-error",
-                "-halt-on-error",
-                "-interaction=nonstopmode",
                 "-synctex=1",
-                "-outdir=%OUTDIR%",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
                 "%DOC%"
-            ],
-            "env": {}
+            ]
         },
         {
-            "name": "make-thesis",
-            "command": "make",
-            "args": [],
-            "env": {}
+            "name": "xelatex",
+            "command": "xelatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ]
+        },
+        {
+            "name": "pdflatex",
+            "command": "pdflatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ]
+        },
+        {
+            "name": "bibtex",
+            "command": "bibtex",
+            "args": [
+                "%DOCFILE%"
+            ]
         }
     ],
-    "latex-workshop.latex.watch.files.ignore": [
-        "**/thuthesis.cls",
-        "**/*.bbx",
-        "**/*.bbl",
-        "**/*.cbx",
-        "**/*.cfg",
-        "**/*.clo",
-        "**/*.cnf",
-        "**/*.def",
-        "**/*.dfu",
-        "**/*.enc",
-        "**/*.fd",
-        "**/*.fmt",
-        "**/*.lbx",
-        "**/*.map",
-        "**/*.mkii",
-        "**/*.pfb",
-        "**/*.tfm",
-        "**/*.vf",
-        "**/*.code.tex",
-        "**/*.sty",
-        "**/texmf-{dist,var}/**",
-        "**/Local/MiKTeX/**",
-        "**/Local/Programs/MiKTeX/**",
-        "**/Roaming/MiKTeX/**",
-        "**/Program*/MiKTeX*/**",
-        "**/.miktex/texmfs/**",
-        "/var/cache/miktex-texmf/**",
-        "/usr/local/share/miktex-texmf/**",
-        "**/Library/Application Support/MiKTeX/texmfs/**",
-        "/dev/null"
-    ]
+    "latex-workshop.view.pdf.viewer": "tab",
+    "latex-workshop.latex.clean.fileTypes": [
+        "*.aux",
+        "*.bbl",
+        "*.blg",
+        "*.idx",
+        "*.ind",
+        "*.lof",
+        "*.lot",
+        "*.out",
+        "*.toc",
+        "*.acn",
+        "*.acr",
+        "*.alg",
+        "*.glg",
+        "*.glo",
+        "*.gls",
+        "*.ist",
+        "*.fls",
+        "*.log",
+        "*.fdb_latexmk"
+    ],
 }
