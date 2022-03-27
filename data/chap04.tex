@@ -12,7 +12,7 @@
 动态数据集合。检测流式时间序列的对称性需要满足实时性和高效性，
 即给定一个实时生成的时间序列$X=(p_1,p_2,\dots)$和时间窗口$w$，
 需要在每个数据点$p_t$生成时，检测并度量时间子序列
-$S=\left(p_(t-w+1),p_(t-w+2),\dots,p_t \right)$的对称性。
+$S=\left(p_{t-w+1},p_{t-w+2},\dots,p_t \right)$的对称性。
 \begin{figure}
   \centering
   \includegraphics[width=0.86\linewidth]{shanghai_point.png}
@@ -20,12 +20,12 @@ $S=\left(p_(t-w+1),p_(t-w+2),\dots,p_t \right)$的对称性。
   \label{fig:shanghai_point}
 \end{figure}
 由3.1节可知,使用$DP\left(i,j\right)$表示时间序列
-$Q=(p_i,p_(i+1),\dots,p_j )$的对称度。因此，
+$Q=(p_i,p_{i+1},\dots,p_j )$的对称度。因此，
 当新到来一个数据点$p_(j+1)$时，可以用公式~\ref{eq:stream_dp}
 计算$DP\left(i+1,j+1\right)$。然而在该公式中，
 由于$p_(j+1)$是新增点，状态$DP\left(i+2,j+1\right)$
 尚未计算，不可直接使用。若直接用DTW算法计算
-$S=\left(p_(t-w+1),p_(t-w+2),…,p_t \right)$
+$S=\left(p_{t-w+1},p_{t-w+2},…,p_t \right)$
 与其反转序列的DTW距离作为该序列的对称度，不仅使得对称度结果
 偏高，且其时间复杂度又退化为$O\left(w^2\right)$。
 因此，需要考虑如何利用已计算的状态优化流式算法。
@@ -41,10 +41,10 @@ $S=\left(p_(t-w+1),p_(t-w+2),…,p_t \right)$
 图~\ref{fig:latitude_stream_matrix}展示了运煤车单次运输过程中纬度变化时间序列和
 单点实时新增时对称度状态推导的变化过程，通过观察动态规划状态
 的推导过程可知，当新增一个数据点$p_t$时，时间子序列
-$S=\left(p_(t-w+1),p_(t-w+1),…,p_(t-1) \right)$
+$S=\left(p_{t-w+1},p_{t-w+1},…,p_{t-1} \right)$
 范围之内的对称度状态不须重新推导。因为根据3.1节介绍的时间序列
 对称模式挖掘算法的数学性质，该算法满足单调性和连续性，时间序列
-$S$从$p_(t-w+1)$到$p_(t-1)$之间的对称度状态$DP\left(i,j\right)$
+$S$从$p_{t-w+1}$到$p_{t-1}$之间的对称度状态$DP\left(i,j\right)$
 仍然是由$DP\left(i+1,j\right)$,$DP\left(i,j-1\right)$
 和$DP\left(i+1,j-1\right)$推导而来。这三个状态在对称度矩阵
 中分别位于$DP\left(i,j\right)$的下方、左方和左下方。
@@ -100,7 +100,7 @@ $S$从$p_(t-w+1)$到$p_(t-1)$之间的对称度状态$DP\left(i,j\right)$
   \small
   \begin{algorithmic}
     \REQUIRE 新数据点$p_t$，长度约束$w$
-    \ENSURE 布尔型变量，标志$S=\left(p_(t-w+1),p_(t-w+2),…,p_t \right)$是否为对称子序列
+    \ENSURE 布尔型变量，标志$S=\left(p_{t-w+1},p_{t-w+2},…,p_t \right)$是否为对称子序列
 
     \STATE 将$p_t$置于时间序列$X$中
     \IF{$t > 1$}
