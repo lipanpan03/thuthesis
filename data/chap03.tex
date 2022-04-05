@@ -1,20 +1,37 @@
 % !TeX root = ../thuthesis-example.tex
 
-\chapter{对称模式挖掘算法}
+\chapter{全局对称模式挖掘算法}
 
-本章将进一步对所提出的对称模式挖掘方法进行具体阐述。
-整体来看，时间序列对称模式挖掘分为两大类，
-一类是时间序列整体组成一个全局的对称模式，
-另一类是对时间序列进行分段处理，由对称子序列组成的对称模式集合。
-对于第一类对称模式挖掘，需要一个全局对称性度量算法和
-基于时间序列数据特征的对称度阈值算法以过滤对称模式。
-而若需要计算分段时间序列的对称性，
-则需要在基于分段长度约束的前提下，
-首先对时间序列进行分段处理，
-之后通过分段对称性度量算法计算时间子序列的对称度，
-然后使用由数据特征和对称度分布特征共同确定的对称度阈值
-分类得到对称子序列，
-最后根据挖掘数量最多不重叠对称子序列的贪心策略挖掘出对称模式。
+本章将对全局对称模式挖掘算法进行研究。根据第2章的定义，
+时序数据的全局对称模式指的是所有点关于
+某个对称中心前后互为镜像的时间序列。
+全局对称模式挖掘就是要通过计算时间序列的对称度，
+判断时间序列是否具有对称性。
+从数学意义上来说，全局对称模式挖掘算法是分段对称模式挖掘
+算法的子问题，全局算法不需要以分段长度$w$作为约束，直接度量
+全局的对称性，并以全局对称性在对称度阈值范围内的时间序列整体
+做为全局对称模式。
+因此，本章节的结构组织如下，在3.1节中分析了
+基于对称中心和原始与反转时间序列相似性度量对称性的不足，
+进而提出了全局对称模式挖掘算法；在3.2节中根据时间序列的数据特征
+分析了对称度阈值确定算法；在3.3节中利用对称度阈值对时间序列进行
+分类，从而得到全局对称模式；并在3.4节中将全局对称模式挖掘算法扩展
+到了流式数据领域。
+% 由两部分构成，分别是全局时间序列对称性度量算法和
+% 全局对称度阈值确定算法，本节将分别介绍这两种算法。
+% 进一步对所提出的对称模式挖掘方法进行具体阐述。
+% 整体来看，时间序列对称模式挖掘分为两大类，
+% 一类是时间序列整体组成一个全局的对称模式，
+% 另一类是对时间序列进行分段处理，由对称子序列组成的对称模式集合。
+% 对于第一类对称模式挖掘，需要一个全局对称性度量算法和
+% 基于时间序列数据特征的对称度阈值算法以过滤对称模式。
+% 而若需要计算分段时间序列的对称性，
+% 则需要在基于分段长度约束的前提下，
+% 首先对时间序列进行分段处理，
+% 之后通过分段对称性度量算法计算时间子序列的对称度，
+% 然后使用由数据特征和对称度分布特征共同确定的对称度阈值
+% 分类得到对称子序列，
+% 最后根据挖掘数量最多不重叠对称子序列的贪心策略挖掘出对称模式。
 
 在对时间序列的对称度进行度量之前，需要执行一步非常重要的操作，数据归一化。
 这是一个在全局对称模式挖掘和分段对称模式挖掘之前都要进行的操作。由于不同来源的时间序列
@@ -51,15 +68,7 @@
   \label{fig:data_range}
 \end{figure}
 
-\section{全局对称模式挖掘算法}
-时间序列的全局对称性指的是时间序列的所有点关于某个对称中心前后互为镜像。
-全局对称模式挖掘就是要通过计算时间序列的对称度，判断时间序列是否具有对称性。
-从数学意义上来说，全局对称模式挖掘算法是分段对称模式挖掘算法的子问题，
-全局算法不需要以分段长度$w$作为约束，直接度量全局的对称性，并以全局对称性
-在对称度阈值范围内的时间序列整体做为对称模式。
-因此，全局对称模式挖掘算法由两部分构成，分别是全局时间序列对称性度量算法和
-全局对称度阈值确定算法，本节将分别介绍这两种算法。
-\subsection{全局时间序列对称性度量算法}
+\section{全局时间序列对称性度量算法}
 
 对于全局时间序列而言，使用原始时间序列和其反转时间序列的相似性来度量对称性，
 是一种可行的时间序列对称性度量方法。此方法的好处是可以避免确定对称中心
@@ -71,6 +80,12 @@
 7.6，更加符合真实的时间序列对称性结果。因此，本文定义了一种新的基于动态规整算法和区间动态规划思想的对称性
 度量方式，既保持了动态时间规整算法准确率高、鲁棒性强的特点，
 又优化了对称度的结果和计算效率。
+\begin{figure}
+  \centering
+  \includegraphics[width=0.86\linewidth]{beijing_temp.png}
+  \caption{北京市月平均气温变化}
+  \label{fig:beijing_temp}
+\end{figure}
 
 首先从全局角度考虑对称时间序列的
 匹配过程，由于不存在明确的对称中心，只能通过点和点之间的直接匹配度量
@@ -87,12 +102,6 @@ $X=\left(\left(t_1,x_1 \right),\left(t_2,x_2\right),\dots,
 而制约$x_2$与$x_k$匹配的条件不仅仅是这两点之间的距离，而是
 时间序列$\left(\left(t_2,x_2 \right),\dots,\left(t_k,x_k \right)\right)$
 的对称度。
-\begin{figure}
-  \centering
-  \includegraphics[width=0.86\linewidth]{beijing_temp.png}
-  \caption{北京市月平均气温变化}
-  \label{fig:beijing_temp}
-\end{figure}
 
 \begin{figure}
   \centering
@@ -135,6 +144,13 @@ $R_{best}=\left(r_1,r_2,\dots,r_k \right),\left⌊n/2\right⌋ \leq
   \label{eq:best_route}
 \end{equation}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.86\linewidth]{symmetric_matrix.png}
+  \caption{相似度矩阵最优匹配路径示意图}
+  \label{fig:symmetric_matrix}
+\end{figure}
+
 然而，从$r_1$到$r_k$的有效路径却是指数级的，采用暴力求解的方法不现实。
 图~\ref{fig:symmetric_matrix}展示了一个时间序列在对称度矩阵上的最优
 匹配路径。观察发现，路径R中的点$r_i$对于时间序列而言是由内向外匹配的。
@@ -163,12 +179,6 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 再反向以$r_k$为起点寻找匹配路径。直到$i=j$或者$i=j-1$时，
 寻找过程结束，最终得到完整的匹配路径。通过累积计算匹配路径中每对匹配点之间的距离，
 可以得到匹配点的距离之和，最终计算得到的$DP(1,n)$即可视为时间序列$X$的对称度。
-\begin{figure}
-  \centering
-  \includegraphics[width=0.86\linewidth]{symmetric_matrix.png}
-  \caption{相似度矩阵最优匹配路径示意图}
-  \label{fig:symmetric_matrix}
-\end{figure}
 
 \renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
 \renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
@@ -214,23 +224,33 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 提高了度量的准确性和健壮性，同时，因减少了重复匹配，也提高了本算法的
 时间效率。尽管其渐进时间复杂度仍然为$O\left(w^{2}\right)$，
 但相比于基于原始和反转时间序列的DTW距离的相似度度量算法，
-减少了$50 \%$的重复匹配，并且在3.2节所述的分段时间序列对称性度量算法中
-更加提升了对称子序列的计算效率。
+减少了$50 \%$的重复匹配，提升了时间序列对称度的计算效率。
 
-\subsection{全局对称度阈值确定算法}
-3.1.1节讲述了时间序列的全局对称性度量算法，在得到全局时间序列的对称度之后，
-需要确定对称度阈值，才能判断时间序列是否具有对称性，进而挖掘出全局对称模式。
-对称度阈值实际上是对时间序列进行分类，对称度在阈值范围内的
-划分为对称序列，否则划分为非对称序列。
-因此，对称度阈值必然和时间序列本身的差异程度
-密切相关。
-如果时间序列的变化比较平缓，为了将对称模式挖掘出来，
-对称度阈值就需要设定的较小。
+\section{全局对称度阈值确定算法}
+
+3.1节讲述了时间序列的全局对称性度量算法，在得到全局时间序列的
+对称度之后，还需要确定对称度阈值，才能判断时间序列是否具有对称性。
+对称度阈值用于对时间序列进行分类，
+对称度在阈值范围内的序列划分为对称模式，否则划分为非对称模式。
+在真实工业场景的数据挖掘中，经常由专家根据领域知识人为确定
+先验阈值。例如，在运输车行驶往返形成的时间序列数据中，
+由于车道变换导致的相同位置经度变化不会超过0.0001度，
+此经验信息可以用为对称模式匹配过程中的单点匹配误差阈值。
+尽管使用经验阈值的方式可以高效的对时间序列对称模式进行分类，
+但并不是所有来源的数据集都有明确的经验阈值，或者其阈值
+只是一个较为模糊的范围，不具有进行对称模式分类的作用。
+因此，需要设计一种不依赖于领域知识的对称度阈值确定算法。
+
+考虑到对称度本质上是时间序列前后匹配得到的
+自相似性结果，因此，对称度阈值必然和时间序列本身的
+差异程度密切相关。如果时间序列的变化比较平缓，为了将对称模式
+挖掘出来，对称度阈值就需要设定的较小。
 如果时间序列变化特别剧烈，相应的在进行对称时间序列匹配的过程中，
 匹配点的差异可能就特别大，因此，对称度阈值也需要
 设定的较大。然而，影响对称度阈值高低的关键因素不是标准差
 代表的整体时间序列的差异程度，而是匹配点之间的差异程度。
-图~\ref{fig:symmetry_diff}展示了标准化后正弦曲线和河北某县气温的变化时间序列，
+图~\ref{fig:symmetry_diff}展示了标准化后正弦曲线和
+河北某县气温的变化时间序列，
 两者都是对称时间序列。然而，尽管两者的标准差都是1，
 但因为正弦时间序列完美匹配而气温时间序列匹配存在误差，
 所以前者的对称度为0，而后者的对称度为0.7。
@@ -284,308 +304,189 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
   \end{algorithmic}
 \end{algorithm}
 
-\section{分段对称模式挖掘算法}
-
-3.1节介绍了全局对称模式挖掘算法，
-利用全局时间序列对称性度量算法得到对称度，
-再根据全局对称度阈值确定算法得到对称度阈值，
-从而挖掘出全局对称模式。然而，真实的对称模式往往是聚合在一条
-长时间序列之中的，其中有缺失点、异常点、噪声点等种种干扰，
-而且多个对称子序列可能相互重叠在一起，
-使得分段对称模式挖掘和结果判断更加困难。
-因此，本节设计了一种从长时间序列中挖掘出分段对称子模式的算法。
-
-\subsection{分段时间序列对称性度量算法}
-要对时序数据进行对称子序列的挖掘，首先要做的就是把时间序列划分成
-一段一段的子序列，然后对子序列进行对称度度量。
-时间序列断点检测算法是一种经典的时间子序列划分方法。
-图~\ref{fig:break_detection}展示了时间序列断点检测算法的计算流程。为了检测时间序列中的关键点，
-该算法采用直线对整体的时间序列数据进行拟合，如果时序数据的趋势发生了变化，
-则用多条直线拟合整条时序数据。该算法使用单变量线性回归模型拟合每段时间
-序列，每处理一个新数据点就重新计算多段拟合误差，利用动态规划算法全局
-最大化分段效果。时间序列断点检测算法的好处是可以根据时间序列的趋势进行
-关键点的判断，但是，工业时间序列中的对称模式多种多样，除去首尾点之外，
-模式内部可能也存在关键点，只识别出关键点无法成功分割出对称模式。
-此外，时间序列断点检测算法的复杂度高达$O\left(n^{3}\right)$，
-甚至超出了对称模式挖掘算法的复杂度，在实际工业场景中不具备应用价值。
-\begin{figure}
-  \centering
-  \includegraphics[width=0.86\linewidth]{break_detection.png}
-  \caption{时间序列断点检测与直线拟合图}
-  \label{fig:break_detection}
-\end{figure}
-
-基于此，本文选择基于滑动窗口的时间序列分段算法。滑动窗口源于网络流量控制
-技术，在时间序列分析领域可以用于在特定窗口大小的子序列上执行对称度计算的
-操作。通过维护一个窗口，不断向前滑动，从而划分出全部的时间序列分段。
-图~\ref{fig:sliding_window}展示了使用滑动窗口将时间序列中每个长度为$w$的子序列划分出来的过程。
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.86\linewidth]{sliding_window.png}
-  \caption{滑动窗口时间序列分段示例}
-  \label{fig:sliding_window}
-\end{figure}
-
-在滑动窗口模型中，可以直接使用3.1节所述的全局对称性度量算法计算每段时间子序列
-的对称性，由于单个时间序列对称性计算的时间复杂度为$O(w^2 )$，所以全部
-分段时间序列对称性度量算法的时间复杂度为$O\left(|X| \times w^{2}\right)$。
-然而，利用滑动窗口和区间动态规划算法的特点可以将复杂度降低一个阶数。
-考虑时间序列$X$两段长度为$w$的连续子序列$S_{i}=\left(\left(t_{i}, x_{i}\right),\left(t_{i+1}, x_{i+1}\right), \dots,\left(t_{i+w-1}, x_{i+w-1}\right)\right)$
-和$S_{i+1}=\left(\left(t_{i+1}, x_{i+1}\right),\left(t_{i+2}, x_{i+2}\right), \dots,\left(t_{i+w}, x_{i+w}\right)\right)$的对称度度量，
-根据式~\ref{eq:dp_item}的状态方程，时间子序列$S_i$的对称度
-$D P(i, i+w-1)$由$DP(i,i+w-2)$，$DP(i+1,i+w-1)$和$DP(i+1,i+w-2)$
-的最小值推导而来，而子序列$S_{i+1}$的对称度$D P(i+1, i+w)$由
-$D P(i+1, i+w-1)$，$DP(i+2,i+w)$和$DP(i+2,i+w-1)$的最小值推导
-而来，这两个对称度的计算都使用到了状态$DP(i+1,i+w-1)$，如果分别计算
-将会产生大量的重复计算。然而，考虑到动态规划方程的无后效性，如果先计算
-出时间序列$X$中所有长度为$w-1$和$w-2$的子序列对称度并保存下来，
-则$S_i$和$S_{i+1}$的状态可以直接计算得到。
-图~\ref{fig:fregment}展示了分段时间序列对称度推导过程，
-假设时间序列$X$的长度为9，子序列长度即滑动窗口长度为5，采用窗口长度由小到大的
-自底向上的推导顺序，每段子序列对称度状态都可以通过$O(1)$的复杂度计算得到，最终所有时间子序列
-对称度度量的复杂度由状态个数决定，最底层长度为1的状态有$|X|$个，最顶层
-长度为$w$的状态有$|X|-w+1$个，根据等差数列求和共有
-$2 \times|X| \times w-w^{2}+w$个状态。
-因此，分段时间序列对称度度量算法的渐进时间复杂度为$O(|X| \times w)$，
-比通过原始和反转时间序列DTW距离度量对称度的$O\left(|X| \times w^{2}\right)$
-效率高一个阶数。
-\begin{figure}
-  \centering
-  \includegraphics[width=0.86\linewidth]{fregment.png}
-  \caption{分段时间序列推导流程}
-  \label{fig:fregment}
-\end{figure}
-
-\subsection{分段对称度阈值确定算法}
-3.2.1节讲述了分段时间序列的对称性度量算法，根据3.2.1节的算法，
-给定时间序列X和子序列的长度约束$w$，可以在$O(|X| \times w)$的时间内
-计算出所有的子序列对称度。然而，如果想判别出真正的对称时间子序列，
-还需要至关重要的一步——确定对称度阈值。
-图~\ref{fig:lontitude_symmetry}展示了运输车经度标准化处理后的时间序列和对应的分段对称度变化情况。
-一般工业场景中，对称度阈值往往是由领域专家输入的。但是，并非所有的
-应用场景中都能找到专业的领域专家。并且，如果对称度阈值提供的不合适，
-将极大的影响对称模式的挖掘。因此，本节提出了一个基于时间序列数据特征
-和对称度分布特征的对称度阈值计算方法。
-\begin{figure}
-  \centering
-  \includegraphics[width=0.86\linewidth]{std_lo_symmetry.png}
-  \caption{标准化经度分段对称度变化}
-  \label{fig:lontitude_symmetry}
-\end{figure}
-
-分段对称度阈值是对所有的时间子序列度量对称性，
-因此，除了全局对称度阈值
-考虑到的时间序列数据特征，对称度自然分布同样产生阈值划分。
-基于时间序列数据特征的阈值确定算法已在3.1.2节中详述，本节只
-讨论基于分布特征的对称度阈值确定算法。
-
-在同一类时间序列中，长度相同的对称子序列的对称度较小，
-而非对称子序列的对称度较大，这之间存在一个天然的阈值划分。
-根据聚类方法[10]和自然断点分类的划分原则[11,12]，
-同一个类簇中数据的相似度高而不同类簇中数据的相似度低。
-换言之，两个对称子序列的对称度差距应尽可能小，
-而对称子序列与非对称子序列的对称度差距应尽可能大。
-在概率统计中，方差用于衡量数据集中数据的偏离程度。
-因此，很多算法使用方差作为度量指标变化的阈值[9]。
-公式~\ref{eq:threshold2}展示了基于方差度量的对称度阈值确定原则，
-其中，$DP_i$和$DP_j$均表示计算得到的子序列对称度，$\overline{DP_{i}}$̅和$\overline{DP_{j}}$
-表示二者的均值。公式的最优化目标为在子序列对称度组成的集合中，
-通过选择某个合适的值作为对称阈值，对称度小于该阈值的子序列为
-对称子序列集合，对称度大于该阈值的子序列为非对称子序列集合，
-使得对称子序列集合和非对称子序列集合的对称度方差之和最小。
-图~\ref{fig:natural_break}展示了在运输车子序列对称度和挖掘机工况子序列对称度中
-选择合适的自然断点，可使得对称模式和非对称模式的均值适中，
-方差之和最小。综合时间序列数据特征和对称度分布的两类对称度阈值，
-最终可以得到对称度阈值的完整公式，即式~\ref{eq:threshold}所示。
+\section{挖掘全局对称模式}
+通过全局对称性度量算法计算得到时间序列的对称度之后，就可以
+使用领域知识和自定义算法确定的对称度阈值对模式进行分类了。
+在未指定先验阈值的情况下，如果根据算法~\ref{alg:threshold1}
+计算得到的对称度阈值为$\theta_1$，那么，本文所要挖掘的对称模式
+即是满足公式~\ref{eq:global_symmetry}的时间序列。
 \begin{equation}
-  \theta_{2}=\underset{x \in D P}{\operatorname{argmin}}\left(\sum_{D P_{i} \leq x}\left(D P_{i}-\overline{D P_{l}}\right)^{2}+\sum_{D P_{j}>x}\left(D P_{j}-\overline{D P_{j}}\right)^{2}\right)
-  \label{eq:threshold2}
+  S = \{X|D(X)\leq\theta_1\}
+  \label{eq:global_symmetry}
 \end{equation}
-\begin{equation}
-  \theta=\min \left(\theta_{1}, \theta_{2}\right)
-  \label{eq:threshold}
-\end{equation}
+
+综上所述，全局时间序列对称模式挖掘算法的计算流程如图
+~\ref{fig:algorithm_process}所示。首先对时间序列数据进行标准化，
+将其统一到同一个量纲范围内，然后使用全局对称性度量算法计算时间序列的
+对称度，之后由用户决定使用先验阈值或者算法~\ref{alg:threshold1}
+计算得到对称度阈值，最后通过比较时间序列的对称度是否在阈值范围内
+确定其是否属于全局对称模式。
 \begin{figure}
   \centering
-  \subcaptionbox{运煤车轨迹子序列对称度\label{fig:natural_break-a}}
-  {\includegraphics[width=0.43\linewidth]{natural_break-a.png}}
-  \subcaptionbox{挖掘机工况子序列对称度\label{fig:natural_break-b}}
-  {\includegraphics[width=0.43\linewidth]{natural_break-b.png}}
-  \caption{运输车轨迹和挖掘机工况子序列对称度分布}
-  \label{fig:natural_break}
-\end{figure}
-
-算法~\ref{alg:threshold}给出了对称度阈值的算法，考虑到
-基于对称度分布的阈值确定算法需要用到
-动态集合方差的计算，本文采用了流式的方差计算方法。
-第1行按照大小顺序对对称度进行排序，为方差的流式计算做准备。
-第2-8行根据流式算法计算前i小的对称度方差并保存到数组$l$中，从而得到
-顺序排序的前缀方差数组。
-第9-16行将对称度倒序排序后计算前$i$大的对称度方差并保存到数组$r$中，
-由此得到倒序排序的前缀方差数组。
-第17-28行通过计算前$i$小和后$n-i$大的对称度方差之和的最小值
-得到基于对称度分布的阈值。
-第24-35行计算时间序列相邻点距离的均值得到全局对称度阈值，
-并通过和对称度分布阈值比较得到较小者，作为最终的对称度阈值。
-采用这种算法得到的对称度阈值不仅考虑到了时间序列本身的特征，
-还考虑到了对称度的分布，在实验结果中有良好的表现。
-
-
-\renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
-\renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
-
-\begin{algorithm}[t]
-  \caption{对称度阈值划分算法$calculate\_threshold$}
-  \label{alg:threshold}
-  \small
-  \begin{algorithmic}
-    \REQUIRE 子序列对称度列表$y$，时间序列$X=\left(p_{1}, p_{2}, \dots, p_{n}\right)$
-    \ENSURE 对称度阈值$\theta$
-
-    \STATE sort$(y)$
-    \STATE $a_1 \leftarrow y_1$
-    \STATE $i \leftarrow 2$
-    \WHILE{$i \leq \left|y\right|$}
-    \STATE $a_i \leftarrow a_{i-1}+(y_i-a_{i-1})/{i}$
-    \STATE $l_i \leftarrow (i-1) / (i \times i) \times(y_i-a_{i-1})^{2}+(i-1) / i \times l_{i-1}$
-    \STATE $i \leftarrow i+1$
-    \ENDWHILE
-
-    \STATE reverse$(y)$
-    \STATE $a_1 \leftarrow y_1$
-    \STATE $i \leftarrow 2$
-    \WHILE{$i \leq \left|y\right|$}
-    \STATE $a_i \leftarrow a_{i-1}+(y_i-a_{i-1})/{i}$
-    \STATE $r_i \leftarrow (i-1) / (i \times i) \times(y_i-a_{i-1})^{2}+(i-1) / i \times r_{i-1}$
-    \STATE $i \leftarrow i+1$
-    \ENDWHILE
-
-    \STATE reverse$(r)$
-    \STATE reverse$(y)$
-    \STATE $d \leftarrow l_1 + r_2$
-    \STATE $idx \leftarrow 1$
-    \STATE $i \leftarrow 2$
-    \WHILE{$i < \left|X\right|$}
-    \IF{$l_i + r_{i+1} < d$}
-    \STATE $d \leftarrow l_i + r_{i+1}$
-    \STATE $idx \leftarrow i$
-    \ENDIF
-    \STATE $i \leftarrow i+1$
-    \ENDWHILE
-    \STATE $i \leftarrow 1$
-    \WHILE{$i < \left|X\right|$}
-    \STATE minus $\leftarrow$ minus $+D\left(p_{i}, p_{i+1}\right)$
-    \STATE $i \leftarrow i+1$
-    \ENDWHILE
-    \STATE $\theta \leftarrow \min \left({\text { minus }} / (n-1), {dp_{idx}} / {n}\right)$
-    \RETURN $\theta$
-  \end{algorithmic}
-\end{algorithm}
-
-\subsection{挖掘分段对称模式}
-计算出时间序列$X$所有在长度约束范围之内的子序列对称度之后，
-可以利用贪心算法挖掘得到所有满足对称性的子序列。以斗杆外摆为例，
-在挖掘过程中，存在对称子序列相互包含的情况。如图~\ref{fig:overlap}
-中所示，子序列$a$、$b$、$c$均是对称子序列。由于要挖掘不重叠对称子序列，
-若结果集合中选择了$a$，则不能再选择$b$和$c$。因此，
-为了充分利用时间序列的信息，本文以对称子序列的数量最大值为
-优化目标。根据贪心算法的思想，若上一个选择的对称子序列为$s_i$
-其长度为$w$，则下一个对称子序列的贪心策略为从数据点$i+w$
-开始，选择第1个长度为$w$的对称子序列, 可以保证能得到数量最多的
-不重叠子序列。换言之，对于两个长度为$w$且存在重叠的时间序列，选择开始点最早的
-时间序列能保证挖掘到数量最多的对称子序列。具体证明如下：假设存在3个长度为$w$的对称子序列
-$A=\left(p_{i}, p_{i+1}, \dots, p_{i+w-1}\right)$，$B=\left(p_{j}, p_{j+1}, \dots, p_{j+w-1}\right)$和
-$C=\left(p_{k}, p_{k+1}, \dots, p_{k+w-1}\right)$，并且$i<j<k$。若选择A序列进入
-对称模式集合，则剩余对称模式可以从$p_{i+w}$之后的点进行选取。若选择B序列进入
-对称模式集合，则剩余对称模式可以从$p_{j+w}$之后的点进行选取。由$i<j$可知，
-$i+w<j+w$，前者的选择范围比后者更广，如果在选择B序列进入对称模式集合之后仍可选择C序列，
-证明$j+w \leq k$，则$i+w$也$\leq k$，同样也可以选择A序列来替换B序列进入对称模式集合。
-反之，如果选择A序列进入对称模式集合，则不一定可以由B序列替换。因此，对于长度相同的对称子序列，
-选择起始时间点最早的序列能保证挖掘出最多的对称模式。
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.86\linewidth]{symmetric_overlap.png}
-  \caption{对称时间序列反映重叠现象的案例}
-  \label{fig:overlap}
-\end{figure}
-
-本文根据上述对称模式挖掘方法提出了相应的具体算法，
-如算法3.2所示。第1-19行根据第3.2节提出的对称度计算方式
-计算了给定时间长度约束下所有子序列的对称度，第20行根据算法~\ref{alg:threshold}的计算方式
-确定了对称度阈值，第21-30行根据贪心策略
-计算出数量最多的不重叠对称子序列。由前述定义可知，第1-19行计算子序列对称度的时间复杂度为$O(|X| \times w)$，
-第20行自然断点的确定和不重叠对称子序列的挖掘均只需要$O(|X|)$的时间。
-因此，本算法的整体时间复杂度为$O(|X| \times w)$，其效率远远高于直接利用
-DTW 计算的$O\left(|X| \times w^{2}\right)$，为后续的数据分析提供数据基础。
-\renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
-\renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
-
-\begin{algorithm}[t]
-  \caption{时间序列对称模式挖掘算法$calculate\_symmtric\_pattern$}
-  \label{alg:symmetric_pattern}
-  \small
-  \begin{algorithmic}
-    \REQUIRE 时间序列$X=\left(p_{1}, p_{2}, \dots, p_{n}\right)$，长度约束$w$
-    \ENSURE 对称模式$Q$
-
-    \STATE $i \leftarrow 1$
-    \WHILE{$i \leq \left|X\right|$}
-    \STATE $dp_{i,i} \leftarrow inf$
-    \ENDWHILE
-
-    \STATE $i \leftarrow 1$
-    \WHILE{$i < \left|X\right|$}
-    \STATE $dp_{i,i+1} \leftarrow D\left(p_{i}, p_{i+1}\right)$
-    \ENDWHILE
-
-    \STATE $len \leftarrow 3$
-    \WHILE{$len \leq \left|X\right|$}
-    \STATE $i \leftarrow len$
-    \WHILE{$i \leq \left|X\right|-len+1$}
-    \STATE $dp_{i,i+len-1} = D\left(p_{i}, p_{i+1}\right)+\min \left(dp_{i,i+len-2},dp_{i+1,i+len-1},dp_{i+1,i+len-2}\right)$
-    \ENDWHILE
-    \ENDWHILE
-
-    \STATE $i \leftarrow 1$
-    \WHILE{$i \leq \left|X\right|-w+1$}
-    \STATE $y_i=dp_{i,i+w-1}$
-    \ENDWHILE
-    \STATE $\theta = calculate\_threshold\left(y,X\right)$
-
-    \STATE $i \leftarrow 1$
-    \WHILE{$i \leq \left|X\right|-w+1$}
-    \IF{$dp_{i,i+w-1}/w \leq \theta$}
-    \STATE 把$S=\left(p_{i+1}, p_{i+2}, \dots, p_{i+w-1}\right)$放入对称子序列集合$Q$
-    \STATE $i \leftarrow i+w$
-    \ELSE
-    \STATE $i \leftarrow i+1$
-    \ENDIF
-    \ENDWHILE
-    \RETURN $Q$
-  \end{algorithmic}
-\end{algorithm}
-
-\section{本章小结}
-本章主要介绍了时间序列对称模式挖掘的整体框架和算法细节。
-首先定义了对于完整的全局时间序列如何度量对称性，并通过时间序列
-数据特征确定了对称度阈值，由阈值判断时间序列是否属于全局对称模式。
-然后结合滑动窗口将全局时间序列对称性度量算法推广到了分段时间序列中，
-接下来从时间序列数据特征和对称度分布特征确定了分段时间序列对称度阈值，
-并根据对称度阈值过滤得到所有的对称子序列。最后利用
-贪心策略过滤具有重叠部分的对称子序列，从而得到对称模式。
-图~\ref{fig:algorithm_process}展示了对称模式挖掘的算法流程，
-在对时间序列数据进行标准化之后，通过选择是否度量时间序列
-全局对称性，采用不同的对称模式挖掘算法。
-根据第5章的实验证明，本节所定义的全局和分段对称模式挖掘算法
-在不同来源的数据集上具有更高的准确性和鲁棒性。
-而且，由于采用了区间动态规划的思想进行优化，
-分段对称模式挖掘算法在时间上比基于动态时间规整的算法高出了一个阶数，
-在实际工业场景具有广泛的应用价值。
-\begin{figure}
-  \centering
-  \includegraphics[width=0.86\linewidth]{algorithm_process.png}
-  \caption{时间序列对称模式挖掘流程图}
+  \includegraphics[width=0.50\linewidth]{global_symmetry_algorithm.PNG}
+  \caption{全局时间序列对称模式挖掘流程图}
   \label{fig:algorithm_process}
 \end{figure}
+
+\section{全局对称模式流式挖掘算法}
+在实际场景中，经常有在对称模式发生时即时报警的应用。
+金融市场和股票分析是一个对数据的实时性要求很高的场景，
+如果在股票指数或价格时间序列出现符合某种模式的特征时能及时预报，
+将具有极大的应用价值。图~\ref{fig:shanghai_point}展示了
+上证指数在2005年至2015年的变化时间序列，
+红框所示曲线符合对称模式特征。股票市场中的对称理论是一个
+比较小众但成熟的理论，总结为三大对称定律：
+其一为价格对称，即股票上涨的价格和下跌的价格相同；
+其二为时间对称，股票上涨持续的时间与下跌持续的时间一致；
+其三为高低对称，即股票上涨到一半时，后段的走势与前段的走势呈对称状。
+这些定律非常符合本文提出的时间序列对称模式特征。
+金融时间序列中的对称模式意味着当前经济周期的结束，
+如果能成功识别对称模式，在某种意义上则可以成功预测股票的走势，
+在经济周期中获得经济效益。然而，金融时间序列往往都有很强的实时性，
+数据是实时更新的，不具备第3节已知全局时间序列的情况。
+并且，金融时间序列变化快速且剧烈，因此要求算法能快速响应。
+基于此，本节通过优化全局对称模式挖掘算法的状态推导，
+提高了算法的时间效率，将其扩展到了流式应用场景。
+\begin{figure}
+  \centering
+  \includegraphics[width=0.86\linewidth]{shanghai_point.png}
+  \caption{上证指数自2005年至2015年单日变化情况}
+  \label{fig:shanghai_point}
+\end{figure}
+
+\subsection{流式对称子序列计算}
+流式时间序列是一组顺序、大量、快速且连续到达的时间序列数据。
+一般情况下，时间序列数据流可被视为一个随时间延续而无限增长的
+动态数据集合。检测流式时间序列的对称性需要满足实时性和高效性，
+即给定一个实时生成的时间序列$X=(p_1,p_2,\dots)$和时间窗口$w$，
+需要在每个数据点$p_t$生成时，检测并度量时间子序列
+$S=\left(p_{t-w+1},p_{t-w+2},\dots,p_t \right)$的对称性。
+由3.1节可知,使用$DP\left(i,j\right)$表示时间序列
+$Q=(p_i,p_{i+1},\dots,p_j )$的对称度。因此，
+当新到来一个数据点$p_{j+1}$时，可以用公式~\ref{eq:stream_dp}
+计算$DP\left(i+1,j+1\right)$。然而在该公式中，
+由于$p_{j+1}$是新增点，状态$DP\left(i+2,j+1\right)$
+尚未计算，不可直接使用。若直接用DTW算法计算
+$S=\left(p_{t-w+1},p_{t-w+2},…,p_t \right)$
+与其反转序列的DTW距离作为该序列的对称度，不仅使得对称度结果
+偏高，且其时间复杂度又退化为$O\left(w^2\right)$。
+因此，需要考虑如何利用已计算的状态优化流式算法。
+\begin{equation}
+  DP(i+1, j+1)=D(i+1, j+1)+\min \left\{\begin{array}{c}
+    D P(i+2, j+1) \\
+    D P(i+1, j) \\
+    D P(i+2, j)
+    \end{array}\right.
+  \label{eq:stream_dp}
+\end{equation}
+
+图~\ref{fig:latitude_stream_matrix}展示了运煤车单次运输过程中纬度变化时间序列和
+单点实时新增时对称度状态推导的变化过程，通过观察动态规划状态
+的推导过程可知，当新增一个数据点$p_t$时，时间子序列
+$S=\left(p_{t-w+1},p_{t-w+1},…,p_{t-1} \right)$
+范围之内的对称度状态不须重新推导。因为根据3.1节介绍的时间序列
+对称模式挖掘算法的数学性质，该算法满足单调性和连续性，时间序列
+$S$从$p_{t-w+1}$到$p_{t-1}$之间的对称度状态$DP\left(i,j\right)$
+仍然是由$DP\left(i+1,j\right)$,$DP\left(i,j-1\right)$
+和$DP\left(i+1,j-1\right)$推导而来。这三个状态在对称度矩阵
+中分别位于$DP\left(i,j\right)$的下方、左方和左下方。
+而由图~\ref{fig:latitude_stream_matrix}的状态转移矩阵可知，
+当新增数据点$p_t$时，对称度状态矩阵窗口
+整体向右下方移动，并未导致$p_{t-w+1}$到$p_{t-1}$之间产生
+状态失效，这就使得对称度矩阵内的状态推导顺序仍然有效。并且，
+对称度模式挖掘算法的起始状态是两点间距离，也不会随着新数据点的
+到来而发生改变。在推导顺序和起始状态均未改变的前提之下，只需
+计算$DP\left(k,j+1\right),i+1\leq k \leq j+1$，
+即图~\ref{fig:latitude_stream_matrix}所示状态转移矩阵的
+最后一列状态即可。由状态转移矩阵的转移路径可知，
+只需在$O\left(w\right)$的时间内便可计算出$DP\left(k,j+1\right)$，
+相比通过计算原始和反转时间序列的相似性度量对称性的算法大大降低了时间复杂度。
+\begin{figure}
+  \centering
+  \includegraphics[width=0.86\linewidth]{latitude_stream_matrix.png}
+  \caption{运煤车纬度变化与对称度状态转移过程}
+  \label{fig:latitude_stream_matrix}
+\end{figure}
+
+\subsection{挖掘流式对称模式}
+本节根据上述对称模式挖掘方法在流式数据上的分析和扩展，
+提出了相应的流式挖掘算法。在流式应用场景中，
+触发计算的是新数据点的到达，其他位于窗口内的数据点已经到达
+并保存，无需重复输入。因此，需要自定义并维护一个双端队列，
+只保存与新数据点位于同一个窗口$w$内的数据点，作为流式计算的
+状态信息。并且，由图~\ref{fig:latitude_stream_matrix}的
+状态转移矩阵可以发现，对称模式流式挖掘算法模型并不需要保存
+完整的对称度矩阵，当新增一个数据点$p_t$时，只需要用到
+对称度矩阵的最后一列状态来推导和$p_t$相关的状态，从而优化
+空间复杂度。总之，对称模式流式挖掘算法只需要长度约束$w$和
+新增数据点$p_t$作为输入。此外，由于流式数据是动态、源源不断
+到来的，模式识别需要实时报警。
+因此，可以把每个由流式数据组成对称模式视为全局对称模式，采用
+全局对称度阈值确定算法对对称模式进行分类。
+算法~\ref{alg:streaming_symmetric_pattern}
+展示了时间序列对称模式流式挖掘算法
+的计算流程，第1-4行对流式框架所需的时间序列$X$和对称度阈值$d$，
+第5-12行进行冷启动处理，当数据点数小于$w$时更新对称度状态$dp$
+并统一判断为非对称模式。第13-17行倒序计算流式时间序列的对称性，
+以保证下次处理时$X$也只有$w$个数据点，
+第18行将时间序列$X$中第一个数据点删除，第19-23行
+对数据点数大于$w$的时间序列计算对称度状态，
+并通过比较是否超过对称度阈值，判断是否为对称模式。
+该算法的时间和空间复杂度
+均为$O\left(w\right)$，具有较高的时间效率和较快的响应速度。
+
+\renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
+\renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
+
+\begin{algorithm}
+  \caption{时间序列对称模式流式挖掘算法$calculate\_streaming\_symmtric\_pattern$}
+  \label{alg:streaming_symmetric_pattern}
+  \small
+  \begin{algorithmic}
+    \REQUIRE 新数据点$p_t$，长度约束$w$
+    \ENSURE 布尔型变量，标志$S=\left(p_{t-w+1},p_{t-w+2},…,p_t \right)$是否为对称子序列
+
+    \STATE 将$p_t$置于时间序列$X$中
+    \IF{$t > 1$}
+      \STATE $d=d+D\left(p_{t}, p_{t-1}\right)$
+    \ENDIF
+
+    \IF{$t < w$}
+      \STATE $i \leftarrow t-1$
+      \WHILE{$i > 1$}
+        \STATE $dp_{i,t} \leftarrow D\left(p_{i}, p_{t} \right) + \min \left(dp_{i,t-1},dp_{i+1,t},dp_{i+1,t-1}\right)$
+        \STATE $i \leftarrow i-1$
+      \ENDWHILE
+      \RETURN false
+    \ENDIF
+
+    \STATE $i \leftarrow t-1$
+    \WHILE{$i > t-w+1$}
+      \STATE $dp_{i,t} \leftarrow D\left(p_{i}, p_{t} \right) + \min \left(dp_{i,t-1},dp_{i+1,t},dp_{i+1,t-1}\right)$
+      \STATE $i \leftarrow i-1$
+    \ENDWHILE
+
+    \STATE 将$p_{t-w+1}$时间序列X中删除;
+    \IF{$dp_{t-w+1,t}/t > d/(n-1)$}
+      \RETURN false
+    \ELSE
+      \RETURN true
+    \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+
+\section{本章小结}
+本章主要介绍了全局时间序列对称模式挖掘的整体框架和算法细节。
+首先定义了对于完整的全局时间序列如何度量对称性，根据全局最优匹配
+和区间动态规划的算法思想设计了全局对称性度量算法。然后，
+在先验阈值可能缺省的前提下，3.2节通过分析时间序列
+数据特征，根据数据点差分距离的平均值确定了对称度阈值。
+并在3.3节利用对称度阈值过滤得到了全局对称模式。
+最后，本文通过优化对称度计算方式
+将全局对称模式挖掘算法扩展到了流式数据领域。
+根据第5章的实验证明，本节所定义的全局对称模式挖掘算法
+在不同来源的数据集上具有更高的准确性和鲁棒性。
+而且，由于根据流式时间序列的数据特点对对称度计算方式进行优化，
+全局流式对称模式挖掘算法在时间效率上比基于动态时间规整的算法
+高出了一个阶数，在实际工业场景具有广泛的应用价值。
