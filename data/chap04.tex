@@ -103,7 +103,7 @@ $2 \times|X| \times w-w^{2}+w$个状态。
 因此，除了全局对称度阈值
 考虑到的时间序列数据特征，对称度自然分布同样产生阈值划分。
 基于时间序列数据特征的阈值确定算法已在3.1.2节中详述，本节只
-讨论基于分布特征的对称度阈值确定算法。
+讨论基于分布特征的对称度阈值确定算法，即$\theta_2$。
 
 在同一类时间序列中，长度相同的对称子序列的对称度较小，
 而非对称子序列的对称度较大，这之间存在一个天然的阈值划分。
@@ -145,19 +145,19 @@ $2 \times|X| \times w-w^{2}+w$个状态。
 \renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
 
 \begin{algorithm}[t]
-  \caption{对称度阈值划分算法$calculate\_threshold$}
+  \caption{对称度阈值划分算法$calculate\_segment\_threshold$}
   \label{alg:threshold}
   \small
   \begin{algorithmic}
     \REQUIRE 子序列对称度列表$y$，时间序列$X=\left(p_{1}, p_{2}, \dots, p_{n}\right)$
-    \ENSURE 对称度阈值$\theta$
+    \ENSURE 分段对称度阈值$\theta$
 
     \STATE sort$(y)$
     \STATE $a_1 \leftarrow y_1$
     \STATE $i \leftarrow 2$
     \WHILE{$i \leq \left|y\right|$}
-    \STATE $a_i \leftarrow a_{i-1}+(y_i-a_{i-1})/{i}$
-    \STATE $l_i \leftarrow (i-1) / (i \times i) \times(y_i-a_{i-1})^{2}+(i-1) / i \times l_{i-1}$
+    \STATE $a_i \leftarrow a_{i-1}+\frac{y_i-a_{i-1}}{i}$
+    \STATE $l_i \leftarrow \frac{i-1}{i \times i} \times(y_i-a_{i-1})^{2}+\frac{i-1}{i} \times l_{i-1}$
     \STATE $i \leftarrow i+1$
     \ENDWHILE
 
@@ -165,8 +165,8 @@ $2 \times|X| \times w-w^{2}+w$个状态。
     \STATE $a_1 \leftarrow y_1$
     \STATE $i \leftarrow 2$
     \WHILE{$i \leq \left|y\right|$}
-    \STATE $a_i \leftarrow a_{i-1}+(y_i-a_{i-1})/{i}$
-    \STATE $r_i \leftarrow (i-1) / (i \times i) \times(y_i-a_{i-1})^{2}+(i-1) / i \times r_{i-1}$
+    \STATE $a_i \leftarrow a_{i-1}+\frac{y_i-a_{i-1}}{i}$
+    \STATE $r_i \leftarrow \frac{i-1}{i \times i} \times (y_i-a_{i-1})^{2}+\frac{i-1}{i} \times r_{i-1}$
     \STATE $i \leftarrow i+1$
     \ENDWHILE
 
@@ -187,12 +187,12 @@ $2 \times|X| \times w-w^{2}+w$个状态。
     \STATE minus $\leftarrow$ minus $+D\left(p_{i}, p_{i+1}\right)$
     \STATE $i \leftarrow i+1$
     \ENDWHILE
-    \STATE $\theta \leftarrow \min \left({\text { minus }} / (n-1), {dp_{idx}} / {n}\right)$
+    \STATE $\theta \leftarrow \min \left(\frac{minus}{n-1}, \frac{dp_{idx}}{n}\right)$
     \RETURN $\theta$
   \end{algorithmic}
 \end{algorithm}
 
-算法~\ref{alg:threshold}给出了对称度阈值的算法，考虑到
+算法~\ref{alg:threshold}给出了分段对称度阈值的计算方法，考虑到
 基于对称度分布的阈值确定算法需要用到
 动态集合方差的计算，本文采用了流式的方差计算方法。
 第1行按照大小顺序对对称度进行排序，为方差的流式计算做准备。
@@ -248,7 +248,7 @@ DTW 计算的$O\left(|X| \times w^{2}\right)$，为后续的数据分析提供�
 \renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
 
 \begin{algorithm}
-  \caption{时间序列对称模式挖掘算法$calculate\_symmtric\_pattern$}
+  \caption{分段对称模式挖掘算法$calculate\_segment\_symmtric\_pattern$}
   \label{alg:symmetric_pattern}
   \small
   \begin{algorithmic}
@@ -350,13 +350,13 @@ page数量等等，而PageHeader中却会存储包括数据点个数，开始与
 保存过多的数据，增加了序列化和反序列化的时间开销，也浪费了
 宝贵的存储空间。考虑蕴含分段对称模式时间序列的数据特征，
 不管时间序列包含了多少个分段对称模式，根据第2章中的定义，
-其必然是互不重叠的。因此，可以根据分段对称模式的自然断点确定
+其必然是互不重叠的。因此，可以根据分段对称模式的物理断点确定
 IoTDB存储Page的点数上限，保证不存在跨Page的分段对称模式。
 这样就不需要在元信息中存储过多的原始点信息。接下来主要介绍
 如何根据IoTDB的写入流程具体优化分段对称模式挖掘算法。
 
 
-\subsection{分段对称模式元信息的计算}
+\subsection{单点更新内存状态}
 
 如上所述，Page的元数据存储结构PageHeader既然能存储最值，总和等信息，
 那自然也能存储分段对称模式相关的元数据。考虑IoTDB的数据写入流程，
@@ -372,153 +372,130 @@ IoTDB存储Page的点数上限，保证不存在跨Page的分段对称模式。
 来时利用流式算法在$O(w)$的时间内按照倒序的时间顺序
 计算出从点$p_{t-1}$，$p_{t-2}$到$p_{t-w+1}$与$p_t$范围内
 时间子序列的对称度，并保存在流式计算状态中即可。
+为了节省空间，分段对称模式流式挖掘并未采用全局对称模式流式挖掘
+所使用的二维循环队列，而是只将与点$p_t$相关的单列状态保存在$dp$中。
+此外，需要同步保存的状态包括一个Page内分段时间序列的对称度列表$sym$
+和与$p_t$在同一个窗口$w$内的流式时间序列$X$。
+
+具体的计算流程如算法~\ref{alg:iotdb_streaming}所示，其中，第1-3
+行初始化流式对称度状态$dp$，第4-15行对与$p_t$在同一个窗口的对称度
+状态进行流式更新，第16-20行将长度为$w$的子序列对称度保存到$sym$中，
+第20-24行分别把$p_t$点置入流式时间序列$X$并删除无效点。
+由算法可知，经过分段对称模式挖掘流程的分解，单点写入memtable时只需要
+$O(w)$时间复杂度之内的流式状态更新，而$w$的值一般设置较小，
+故其对写入负载的影响较小。
+
+
+\renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
+\renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
+
+\begin{algorithm}
+  \caption{分段对称模式元数据更新$calculate\_streaming\_metadata$}
+  \label{alg:iotdb_streaming}
+  \small
+  \begin{algorithmic}
+    \REQUIRE 新数据点$p_t$，长度约束$w$
+    \ENSURE 流式时间序列$X$，流式分段对称度列表$sym$，流式对称度状态$dp$
+
+    \IF{$t = 1$}
+        \STATE $dp_{1} \leftarrow 0$
+    \ELSE
+      \STATE $\theta_1 \leftarrow \theta_1 + D\left(p_{t}, p_{t-1}\right)$
+      \STATE $\widetilde{dp_1} \leftarrow 0$
+      \STATE $ idx \leftarrow 1$
+      \WHILE{$ idx \leq |dp|$}
+        \STATE $ idx \leftarrow idx+1$
+        \IF{$idx = 2$}
+          \STATE $\widetilde{dp_{idx}} \leftarrow D\left(p_{t}, p_{t-idx-1}\right)$
+        \ELSE
+          \STATE $\widetilde{dp_{idx}} \leftarrow D\left(p_{t}, p_{t-idx-1}\right)+min(dp_{idx},dp_{idx-1},\widetilde{dp_{idx-1}})$
+        \ENDIF
+      \ENDWHILE
+      \STATE $ dp \leftarrow \widetilde{dp}$
+      \IF{$|dp| = w$}
+        \STATE $sym_{t-w+1} \leftarrow dp_{w}$
+        \STATE 删除$dp$的队首元素
+      \ENDIF
+    \ENDIF
+    \STATE 将$p_t$置于流式时间序列$X$中
+    \IF{$|X| = w$}
+      \STATE 删除$X$的队首元素
+    \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
+\subsection{合并计算分段对称模式元信息}
 
 接下来需要考虑如何在memtable的刷写阶段挖掘出分段对称模式。
 在通过流式算法计算出分段时间序列的对称度之后，再计算出分段对称模式
 的对称度阈值就可以挖掘出分段对称模式。为简化计算，本节用单个Page内
-的对称度阈值在Page内挖掘分段对称模式。对于$\theta_2$，只需要在
-在写入到memtable的阶段与保存的前置点状态进行简单差分即可计算。
-至于$\theta_1$，则需要在memtable刷写阶段根据保存好的时间子序列
+的对称度阈值在Page内挖掘分段对称模式。对于$\theta_1$，只需要在
+在写入到memtable的阶段与保存的前置点状态进行差分即可计算。
+至于$\theta_2$，则需要在memtable刷写阶段根据保存好的时间子序列
 对称度集合以非对称模式对称度和对称模式对称度方差之和为优化目标，
-计算出子序列对称度的自然断点，即$\theta_1$。通过$\theta_1$和
-$\theta_2$的最小值即可得到对称度阈值，由其过滤即可得到
-对称模式信息，保存在PageHeader的元信息中。
+计算出子序列对称度的自然断点。通过$\theta_1$和
+$\theta_2$的最小值即可得到对称度阈值$\theta$，由其过滤即可得到
+对称模式信息，保存在PageHeader的元信息中。在实际工业场景中，
+相比对称模式集合，对称模式的数量具有更重要的指标物理意义，
+因此，可以在PageHeader的元信息中只保存对称模式数量信息。
+具体计算流程如算法~\ref{alg:iotdb_streaming_flush}所示，第1-2行计算得到
+分段对称度阈值，第3-12行通过阈值过滤对称度列表得到分段对称模式的数量信息。
+由于需要遍历全部分段对称度列表$sym$，故其时间复杂度为$O(n)$，
+但由于memtable刷写到磁盘的操作是在后台线程并发执行的，并不会过分影响性能。
 
-% \renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
-% \renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
+\renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
+\renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
 
-% \begin{algorithm}
-%   \caption{时间序列对称模式流式挖掘算法$calculate\_streaming\_symmtric\_pattern$}
-%   \label{alg:streaming_symmetric_pattern}
-%   \small
-%   \begin{algorithmic}
-%     \REQUIRE 新数据点$p_t$，长度约束$w$
-%     \ENSURE 布尔型变量，标志$S=\left(p_{t-w+1},p_{t-w+2},…,p_t \right)$是否为对称子序列
+\begin{algorithm}
+  \caption{分段对称模式流式状态单点更新$calculate\_streaming\_status$}
+  \label{alg:iotdb_streaming_flush}
+  \small
+  \begin{algorithmic}
+    \REQUIRE 最后一个数据点$p_n$，长度约束$w$，流式分段对称度列表$sym$
+    \ENSURE 流式分段对称模式数量$N$
+    \STATE 计算sym流式分段对称度列表的自然断点$\theta_2$
+    \STATE $\theta \leftarrow min(\frac{\theta_1}{n-1},\theta_2)$
 
-%     \STATE 将$p_t$置于时间序列$X$中
-%     \IF{$t > 1$}
-%       \STATE $d=d+D\left(p_{t}, p_{t-1}\right)$
-%     \ENDIF
+    \STATE $i \leftarrow 1$
+    \WHILE{$i \leq \left|sym\right|$}
+    \IF{$\frac{sym_{i}}{w} \leq \theta$}
+    \STATE $N \leftarrow N+1$
+    \STATE $i \leftarrow i+w$
+    \ELSE
+    \STATE $i \leftarrow i+1$
+    \ENDIF
+    \ENDWHILE
+    \RETURN $N$
+  \end{algorithmic}
+\end{algorithm}
 
-%     \IF{$t < w$}
-%       \STATE $i \leftarrow t-1$
-%       \WHILE{$i > 1$}
-%         \STATE $dp_{i,t} \leftarrow D\left(p_{i}, p_{t} \right) + \min \left(dp_{i,t-1},dp_{i+1,t},dp_{i+1,t-1}\right)$
-%         \STATE $i \leftarrow i-1$
-%       \ENDWHILE
-%       \RETURN false
-%     \ENDIF
+综上，本节根据IoTDB的存储和计算方式设计和优化了分段对称模式挖掘算法。
+基于UDF的挖掘算法和基于元数据的挖掘算法在计算效率上各有优劣，
+适用于不同的应用场景。图~\ref{fig:iotdb_segement}展示了不同基于IoTDB的
+分段对称模式挖掘方式，用户可以根据实际的应用场景灵活选择。
+\begin{figure}
+  \centering
+  \includegraphics[width=0.50\linewidth]{iotdb_segement_symmetry.PNG}
+  \caption{基于IoTDB的分段对称模式挖掘流程}
+  \label{fig:iotdb_segement}
+\end{figure}
 
-%     \STATE $i \leftarrow t-1$
-%     \WHILE{$i > t-w+1$}
-%       \STATE $dp_{i,t} \leftarrow D\left(p_{i}, p_{t} \right) + \min \left(dp_{i,t-1},dp_{i+1,t},dp_{i+1,t-1}\right)$
-%       \STATE $i \leftarrow i-1$
-%     \ENDWHILE
-
-%     \STATE 将$p_{t-w+1}$时间序列X中删除;
-%     \IF{$dp_{t-w+1,t}/t > d/(n-1)$}
-%       \RETURN false
-%     \ELSE
-%       \RETURN true
-%     \ENDIF
-%   \end{algorithmic}
-% \end{algorithm}
-
-
-
-% \section{自适应窗口的设计与实现}
-% 时间序列的数据和模式均具有很强的随机性，同一个时间序列中的
-% 对称模式其数据点个数可能不严格相等，而是处于某个合理范围之内。
-% 以挖掘机为例，挖掘不同的坑道时，斗杆移动的轨迹就不同。
-% 当对称模式长度约束设置得较大时，长度较小的模式则挖掘不出。
-% 而当人为设置长度约束为所有对称模式的最小长度时，
-% 尽管可以保证挖掘出长度较小的对称模式，
-% 但是较长模式的信息却经常存在缺失，影响算法挖掘结果的完整性。
-% 图~\ref{fig:excavator_diff_route}展示了挖掘机在不同坑道
-% 挖掘作业斗杆外摆工况变化时间序列。若设定对称子序列的数据点个数
-% 即窗口长度为坑道a的序列长度，则坑道b的对称子序列不能完全挖掘。
-% 因此，当需要挖掘的
-% 对称模式长度不一时，窗口需要在原始长度约束大小上进行自适应的变化
-% 以挖掘出完整的对称模式。本节利用数据点差分的分布特征，
-% 设计了一种自动调节大小的窗口算法。
-
-% 根据时间序列对称性的定义，在设定对称子序列的长度$w$之后，
-% 挖掘出的对称时间子序列$X=\left(p_{i},p_{i+2},…,p_{i+w-1} \right)$
-% 的首尾点$p_{i}$和$p_{i+w-1}$必定匹配。
-% 换言之，首尾点的距离若接近0，
-% 则证明该窗口大小合适；若远大于0，则证明需调大窗口，
-% 以完整获取对称子序列的全部信息。
-% 因此，可以使用时间子序列首尾点的距离来衡量窗口大小设置得
-% 是否合适。
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=0.86\linewidth]{excavator_diff_route.png}
-%   \caption{挖掘机在不同坑道挖掘作业斗杆外摆工况时间序列}
-%   \label{fig:excavator_diff_route}
-% \end{figure}
-
-% 然而，真实工业场景中的匹配数据点往往具有误差，
-% 并不一定满足首尾点距离为0。因此，本文考虑利用相邻点距离
-% 所组成数据集的分布特点，判断窗口是否应当扩张。
-% 根据工业大数据时间序列点的随机性，首尾数据点的距离所组成的
-% 数据集应满足正态分布的特点[13]，且其均值为0。也就是说，
-% 若一个窗口内的相邻点距离集合为
-% $s=\left\{D\left(p_{1}, p_{2}\right), D\left(p_{2}, p_{3}\right), \ldots, D\left(p_{n-1}, p_{n}\right)\right\}$，
-% 则首尾数据点距离的应满足均值为$\mu=0$且标准差$\sigma=\sigma_s$
-% 的正态分布。按照3$\sigma$原则，首尾数据点的距离应在
-% $\left[0,3\sigma\right]$范围之内。
-
-% 此外，考虑到相邻点的距离属于差分计算。
-% 因此，相比标准差，绝对中位差更加适合度量
-% 相邻点距离集合的分布差异。
-% 绝对中位差指的是所有元素与其中位数的偏差的绝对值，
-% 相比标准差具有更强的鲁棒性，
-% 且已有较为成熟的近似算法加快计算[14]。因此，本节使用窗口内
-% 相邻数据点的距离绝对中位差作为$\sigma$,
-% 首尾点的距离应在$\left[0,3\sigma\right]$之间。
-% 指定窗口的基础长度约束$w_{base}$和最长长度约束$w_{max}$，
-% 若窗口的终点和起点的距离
-% 在$\left[0,3\sigma\right]$范围之内，则窗口闭合。
-% 否则，则继续调大窗口，直到窗口大小为$w_{max}$为止。
-% 具体的计算流程如算法~\ref{alg:adaptive_window}所示。
-
-% \renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
-% \renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
-
-% \begin{algorithm}[h]
-%   \caption{自适应窗口算法$adaptive\_window$}
-%   \label{alg:adaptive_window}
-%   \small
-%   \begin{algorithmic}
-%     \REQUIRE 时间序列$X=\left(p_1,p_2,…,p_n\right)$，基础模式长度$w_{base}$，最长模式长度$w_{max}$
-%     \ENSURE 调整后的窗口大小$t$
-
-%     \STATE $\sigma=\operatorname{mad}(X, w_{max})$
-%     \STATE $t \leftarrow w_{base}$
-%     \STATE $i \leftarrow 1$
-%     \WHILE{$i+t<|X| \& \& t<w_{max} \& \& D\left(p_{i}, p_{i+1}\right)>3 \sigma$}
-%       \STATE $t \leftarrow t+1$
-%     \ENDWHILE
-%     \RETURN $t$
-%   \end{algorithmic}
-% \end{algorithm}
 
 \section{本章小结}
-本章主要介绍了时间序列对称模式挖掘在更多应用场景下的扩展。
-首先，流式时间序列数据作为一种在工业和金融领域经常出现的数据
-类型，对其进行对称模式挖掘具有重要的研究价值。但是，
-度量所有时间子序列的对称性会产生大量重复计算，时间效率低，
-且对称度阈值也不好判定。本章根据全局时间序列对称模式挖掘算法
-的状态推导方式，在对称度矩阵上创造性地引入了滑动窗口，
-在不违反对称度状态连续性和单调性的前提下，采用以空间换时间的
-策略将流式对称模式的计算时间复杂度由$O\left(w^2\right)$
-提升至了$O\left(w\right)$。
-此外，为了在时间序列中挖掘完整的对称模式，本章还在对称模式的
-挖掘过程中引入了自适应窗口，通过时间序列的数据特征自动地调节
-窗口大小，以保证挖掘对称模式的完整性。对称模式挖掘在不同的
-应用中具有很好的可扩展性，通过设置不同的约束可以灵活地调整
-对称模式挖掘算法，从而满足不同场景的需要。
-
+本章主要介绍了分段时间序列对称模式挖掘的算法框架和优化扩展。
+首先根据对称子序列长度约束$w$，定义了基于全局最优匹配和区间动态规划
+算法思想的分段时间序列对称性度量算法。然后，
+在3.2节根据时间序列的数据特征和对称度的分布特征提出了
+分段对称度阈值的确定算法
+并在3.3节利用贪心策略和分段对称度阈值过滤得到了分段对称模式。
+最后，本文根据Apache IoTDB的存储和计算方式
+对分段对称模式挖掘算法进行了优化。
+根据第5章的实验证明，本节所定义的分段对称模式挖掘算法
+在不同来源的数据集上具有更高的准确性和鲁棒性，
+而且其效率比基于动态时间规整的算法
+高出了一个阶数。此外，通过在IoTDB系统中
+对比基于UDF和元数据的分段对称模式挖掘算法的性能，
+发现基于元数据的方法对计算查询的效率提升明显。
 % 模板支持 BibTeX 和 BibLaTeX 两种方式处理参考文献。
 % 下文主要介绍 BibTeX 配合 \pkg{natbib} 宏包的主要使用方法。
 
