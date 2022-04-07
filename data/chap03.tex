@@ -274,42 +274,30 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 本文使用在同一个时间序列中前后相邻点的
 差距作为确定对称度阈值的参考。因为对称时间序列要求前后点相匹配，
 符合要求的匹配应该满足匹配点对的距离尽可能小，进而也尽量不要超过匹配点
-的近邻点。式~\ref{eq:threshold1}表示时间序列近邻点距离的平均值，
-可作为全局时间序列对称模式挖掘算法的对称度阈值。为与第4章
-提出的分段对称度阈值进行区分，全局对称度阈值用$\theta_1$来表示。
+的近邻点。因此，近邻点距离的统计指标对于判断全局对称模式
+具有很重要的参考意义。
+相比中位数，近邻点距离的平均数更能反映时间序列的整体变化程度，
+也更适用于对利用全局对称性度量算法计算出来的时间序列对称度进行分类。
+因为中位数只是考虑了相邻点距离在分布上的中间位置情况，
+并未考虑可能存在的距离较大的近邻点。而全局对称性度量算法
+是从时间序列全局为每个点寻找最佳匹配点，可能包含部分匹配
+偏差较大的点，其最终得到的单点对称度从数学意义上来说也是
+全局匹配点距离的平均数。因此，可以使用式~\ref{eq:threshold1}
+所表示的时间序列近邻点距离的平均值，作为全局时间序列对称模式挖掘
+算法的对称度阈值。为与第4章提出的分段对称度阈值进行区分，
+全局对称度阈值用$\theta_1$来表示。
 对称度阈值需要统一量纲，由于不同来源时间序列对称模式的长度不一致，
 因而经全局时间序列对称性度量算法计算出来的对称度
-也要求其与对称模式长度的比值。算法~\ref{alg:threshold1}详述了
-全局对称度阈值的计算方式。
+也要求其与对称模式长度的比值。
 \begin{equation}
   \theta_{1}=\frac{\sum_{i=2}^{n}\left|x_{i}-x_{i-1}\right|}{n-1}
   \label{eq:threshold1}
 \end{equation}
 
-\renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
-\renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
-\begin{algorithm}
-  \caption{全局对称度阈值确定算法$calculate\_global\_threshold$}
-  \label{alg:threshold1}
-  \small
-  \begin{algorithmic}
-    \REQUIRE 时间序列$X=\left(p_{1}, p_{2}, \dots, p_{n}\right)$
-    \ENSURE 全局对称度阈值$\theta_1$
-
-    \STATE $i \leftarrow 1$
-    \WHILE{$i < \left|X\right|$}
-    \STATE minus $\leftarrow$ minus $+D\left(p_{i}, p_{i+1}\right)$
-    \STATE $i \leftarrow i+1$
-    \ENDWHILE
-    \STATE $\theta_1 \leftarrow frac{minus}{n-1}$
-    \RETURN $\theta_1$
-  \end{algorithmic}
-\end{algorithm}
-
 \section{挖掘全局对称模式}
 通过全局对称性度量算法计算得到时间序列的对称度之后，就可以
 使用领域知识和自定义算法确定的对称度阈值对模式进行分类。
-在未指定先验阈值的情况下，如果根据算法~\ref{alg:threshold1}
+在未指定先验阈值的情况下，如果根据公式~\ref{eq:threshold1}
 计算得到的对称度阈值为$\theta_1$，那么，本文所要挖掘的对称模式
 即是满足公式~\ref{eq:global_symmetry}的时间序列。
 \begin{equation}
@@ -317,18 +305,38 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
   \label{eq:global_symmetry}
 \end{equation}
 
-综上所述，全局时间序列对称模式挖掘算法的计算流程如图
-~\ref{fig:algorithm_process}所示。首先对时间序列数据进行标准化，
-将其统一到同一个量纲范围内，然后使用全局对称性度量算法计算时间序列的
-对称度，之后由用户决定使用先验阈值或者算法~\ref{alg:threshold1}
-计算得到对称度阈值，最后通过比较时间序列的对称度是否在阈值范围内
+综上所述，全局时间序列对称模式挖掘的计算步骤如算法~\ref{alg:global_symmetric}
+所示。首先使用全局对称性度量算法计算时间序列的
+对称度，之后由公式~\ref{eq:threshold1}
+计算时间序列数据特征相关的对称度阈值，
+最后通过比较时间序列的对称度是否在阈值范围内
 确定其是否属于全局对称模式。
-\begin{figure}
-  \centering
-  \includegraphics[width=0.50\linewidth]{global_symmetry_algorithm.PNG}
-  \caption{全局时间序列对称模式挖掘流程图}
-  \label{fig:algorithm_process}
-\end{figure}
+
+\renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
+\renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
+\begin{algorithm}
+  \caption{全局对称模式挖掘算法$calculate\_global\_symmtric\_pattern$}
+  \label{alg:global_symmetric}
+  \small
+  \begin{algorithmic}
+    \REQUIRE 时间序列$X=\left(p_{1}, p_{2}, \dots, p_{n}\right)$
+    \ENSURE 布尔型变量，标志全局时间序列$X=\left(p_{1},p_{2},…,p_n \right)$是否为全局对称模式
+
+    \STATE $d \leftarrow calculate\_global\_symmetry(X) $
+    \STATE $i \leftarrow 1$
+    \WHILE{$i < \left|X\right|$}
+    \STATE minus $\leftarrow$ minus $+D\left(p_{i}, p_{i+1}\right)$
+    \STATE $i \leftarrow i+1$
+    \ENDWHILE
+    \STATE $\theta_1 \leftarrow frac{minus}{n-1}$
+    \IF{$d \leq \theta_1 $}
+      \RETURN true
+    \ELSE
+      \RETURN false
+    \ENDIF
+  \end{algorithmic}
+\end{algorithm}
+
 
 \section{全局对称模式流式挖掘算法}
 在实际场景中，经常有在对称模式发生时即时报警的应用。
@@ -359,52 +367,51 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 \subsection{流式时间序列对称性度量}
 流式时间序列是一组顺序、大量、快速且连续到达的时间序列数据。
 一般情况下，时间序列数据流可被视为一个随时间延续而无限增长的
-动态数据集合。一般并不会随着数据点到来度量全部流式时间序列的
-对称性，而只会度量指定长度$n$的流式时间序列对称性。
-为方便计算，可以把长度为$n$流式时间序列视为全局时间序列。
+动态数据集合。如果能够随着数据点的到来，
+不断地对之前所有数据点组成的流式时间序列度量对称性，并在
+对称度超过阈值时及时报警，则算法在实时计算领域具有重要的应用价值。
 检测流式时间序列的对称性需要满足实时性和高效性，
-即给定一个实时生成的时间序列$X=(p_1,p_2,\dots)$和长度$n$，
-需要在每个数据点$p_t$生成时，检测并度量流式时间子序列
-$S=\left(p_{t-n+1},p_{t-n+2},\dots,p_t \right)$的对称性。
-由3.1节可知,使用$DP\left(i,j\right)$表示时间序列
-$Q=(p_i,p_{i+1},\dots,p_j )$的对称度。因此，
-当新到来一个数据点$p_{j+1}$时，可以用公式~\ref{eq:stream_dp}
-计算$DP\left(i+1,j+1\right)$。然而在该公式中，
-由于$p_{j+1}$是新增点，状态$DP\left(i+2,j+1\right)$
-尚未计算，不可直接使用。若直接用DTW算法计算
-$S=\left(p_{t-w+1},p_{t-w+2},…,p_t \right)$
+即给定一个实时生成的时间序列$X=(p_1,p_2,\dots,p_t)$，
+需要在每个数据点$p_t$生成时，以较高的效率
+而不是重新计算的方式检测并度量全局流式时间序列$X$的对称性。
+由3.1节可知,使用$DP\left(1,t-1\right)$表示流式时间子序列
+$S=(p_1,p_2,\dots,p_{t-1} )$的对称度。因此，
+当新到来一个数据点$p_{t}$时，可以用公式~\ref{eq:stream_dp}
+计算$DP\left(1,t\right)$。然而在该公式中，
+由于$p_{t}$是新增点，状态$DP\left(2,t\right)$
+尚未计算，不可直接使用。若直接用DTW算法计算全局流式时间序列$X$
 与其反转序列的DTW距离作为该序列的对称度，不仅使得对称度结果
-偏高，且其时间复杂度又退化为$O\left(w^2\right)$。
+偏高，且其时间复杂度又退化为$O\left(t^2\right)$。
 因此，需要考虑如何利用已计算的状态优化流式算法。
 \begin{equation}
-  DP(i+1, j+1)=D(i+1, j+1)+\min \left\{\begin{array}{c}
-    D P(i+2, j+1) \\
-    D P(i+1, j) \\
-    D P(i+2, j)
+  DP(1, t)=D(1, t)+\min \left\{\begin{array}{c}
+    D P(2, t) \\
+    D P(1, t-1) \\
+    D P(2, t-1)
     \end{array}\right.
   \label{eq:stream_dp}
 \end{equation}
 
 图~\ref{fig:latitude_stream_matrix}展示了运煤车单次运输过程中纬度变化时间序列和
 单点实时新增时对称度状态推导的变化过程，通过观察动态规划状态
-的推导过程可知，当新增一个数据点$p_t$时，时间子序列
-$S=\left(p_{t-n+1},p_{t-n+2},…,p_{t-1} \right)$
+的推导过程可知，当新增一个数据点$p_t$时，流式时间子序列
+$S=\left(p_{1},p_{2},…,p_{t-1} \right)$
 范围之内的对称度状态不须重新推导。因为根据3.1节介绍的时间序列
 对称模式挖掘算法的数学性质，该算法满足单调性和连续性，时间序列
-$S$从$p_{t-n+1}$到$p_{t-1}$之间的对称度状态$DP\left(i,j\right)$
+$S$从$p_{1}$到$p_{t-1}$之间的对称度状态$DP\left(i,j\right)$
 仍然是由$DP\left(i+1,j\right)$,$DP\left(i,j-1\right)$
 和$DP\left(i+1,j-1\right)$推导而来。这三个状态在对称度矩阵
 中分别位于$DP\left(i,j\right)$的下方、左方和左下方。
 而由图~\ref{fig:latitude_stream_matrix}的状态转移矩阵可知，
 当新增数据点$p_t$时，对称度状态矩阵窗口
-整体向右下方移动，并未导致$p_{t-n+1}$到$p_{t-1}$之间产生
+整体向右下方扩张，并未导致$p_{1}$到$p_{t-1}$之间产生
 状态失效，这就使得对称度矩阵内的状态推导顺序仍然有效。并且，
 对称度模式挖掘算法的起始状态是两点间距离，也不会随着新数据点的
 到来而发生改变。在推导顺序和起始状态均未改变的前提之下，只需
-计算$DP\left(k,j+1\right),i+1\leq k \leq j+1$，
+计算$DP\left(k,t\right),1\leq k \leq t$，
 即图~\ref{fig:latitude_stream_matrix}所示状态转移矩阵的
 最后一列状态即可。由状态转移矩阵的转移路径可知，
-只需在$O\left(w\right)$的时间内便可计算出$DP\left(k,j+1\right)$，
+只需在$O\left(t\right)$的时间内便可计算出$DP\left(k,t\right)$，
 相比通过计算原始和反转时间序列的相似性度量对称性的算法大大降低了时间复杂度。
 \begin{figure}
   \centering
@@ -413,41 +420,43 @@ $S$从$p_{t-n+1}$到$p_{t-1}$之间的对称度状态$DP\left(i,j\right)$
   \label{fig:latitude_stream_matrix}
 \end{figure}
 
-\subsection{挖掘流式全局对称模式}
+\subsection{流式挖掘全局对称模式}
 本节根据上述对称模式挖掘方法在流式数据上的分析和扩展，
 提出了相应的流式挖掘算法。在流式应用场景中，
 触发计算的是新数据点的到达，其他位于窗口内的数据点已经到达
 并保存。因此，需要自定义并维护一个队列保存流式时间序列$X$，
-由与新数据点位于同一个窗口$n$内的数据点组成，作为流式计算的
+由历史已经到达的数据点组成，作为流式计算的
 状态信息。并且，由图~\ref{fig:latitude_stream_matrix}的
 状态转移矩阵可以发现，流式全局对称模式挖掘算法并不需要利用
 完整的对称度矩阵信息，当新增一个数据点$p_t$时，只需要用到
 对称度矩阵的最后一列状态来推导和$p_t$相关的状态。
-因此，可以使用循环二维队列$dp$作为保存对称度矩阵的数据结构，
-当需要计算新数据点$p_t$的相关状态时，只需要循环的利用
-已经失效的循环二维队列第$t \% w+1$列所占空间，进而优化空间复杂度。
+因此，可以使用一维列表$dp$作为保存对称度矩阵的数据结构，
+在利用以点$p_{t-1}$为结束点的旧有$dp$计算得到新数据点
+$p_t$的相关状态后，用新计算得到的$dp$更新旧有$dp$即可，
+进而优化空间复杂度。
 此外，由于流式数据是动态、源源不断到来的，模式识别需要实时报警。
 因此，可以采用全局对称度阈值确定算法对流式全局对称模式进行分类。
-总之，对称模式流式挖掘算法只需要长度$n$和
+总之，对称模式流式挖掘算法只需要
 新增数据点$p_t$作为输入，同时保存
-流式全局时间序列$X$，流式对称度矩阵$dp$和
+流式全局时间序列$X$，流式对称度状态列表$dp$和
 流式全局对称度阈值$\theta_1$作为状态信息，
 对于所有的流式全局时间序列$X$，比较其对称度和阈值的数量关系，
 输出其是否属于全局对称模式。
 
 算法~\ref{alg:streaming_symmetric_pattern}
 展示了时间序列对称模式流式挖掘算法
-的计算流程，第1-7行对流式全局时间序列$X$和对称度阈值$d$进行更新，
-第8-15行进行冷启动处理，当数据点数小于$n$时更新对称度状态$dp$
-并统一判断为非对称模式。第16-20行倒序计算流式时间序列的对称性，
-并保存到循环二维队列$dp$中。
-第21行将时间序列$X$中第一个数据点删除，以保证下次处理时$X$也
-只有$n$个数据点，第22-26行
-对数据点数大于$n$的时间序列计算对称度状态，
-并通过比较是否超过对称度阈值，判断是否为对称模式。
-尽管该算法的空间复杂度为$O(n^2)$，但其时间复杂度却优化至了
-$O(n)$，远远高于基于DTW距离的对称模式挖掘算法，
+的计算流程，第1-16行在$O(t)$的时间内
+流式计算以与点$p_t$相关的全局对称度状态$dp$，
+并更新对称度阈值$\theta_1$，
+第17行把新数据点放入流式时间序列$X$，
+第18-22行
+并通过比较流式全局对称度是否超过对称度阈值，判断是否为对称模式。
+分析可知，当每个新数据点到来时，
+全局对称模式流式挖掘算法的时间和空间复杂度均为$O(t)$，
+远远低于每次都重新计算DTW距离以度量对称性的算法，
 具有较高的时间效率和较快的响应速度。
+此外，根据第4章的研究，流式挖掘算法很容易扩展到分段对称模式挖掘领域，
+在结合IoTDB系统实现时具有重要的应用价值。
 
 \renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
 \renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
@@ -457,34 +466,27 @@ $O(n)$，远远高于基于DTW距离的对称模式挖掘算法，
   \label{alg:streaming_symmetric_pattern}
   \small
   \begin{algorithmic}
-    \REQUIRE 新数据点$p_t$，长度$n$
-    \ENSURE 布尔型变量，标志$S=\left(p_{t-n+1},p_{t-n+2},…,p_t \right)$是否为流式全局对称模式
+    \REQUIRE 新数据点$p_t$
+    \ENSURE 布尔型变量，标志流式全局时间序列$X=\left(p_{1},p_{2},…,p_t \right)$是否为流式全局对称模式
 
-    \STATE 将$p_t$置于流式全局时间序列$X$中
-    \IF{$t > 1$}
-      \STATE $\theta \leftarrow \theta+D\left(p_{t}, p_{t-1}\right)$
-    \ENDIF
-    \IF{$t > w$}
-      \STATE $\theta \leftarrow \theta-D\left(p_{t-n}, p_{t-n-1}\right)$
-    \ENDIF
-
-    \IF{$t < w$}
-      \STATE $i \leftarrow t-1$
-      \WHILE{$i > 1$}
-        \STATE $dp_{i,t} \leftarrow D\left(p_{i}, p_{t} \right) + \min \left(dp_{i,t-1},dp_{i+1,t},dp_{i+1,t-1}\right)$
-        \STATE $i \leftarrow i-1$
+    \IF{$t = 1$}
+      \STATE $dp_{1} \leftarrow 0$
+    \ELSE
+      \STATE $\theta_1 \leftarrow \theta_1+D\left(p_{t}, p_{t-1}\right)$
+      \STATE $dp_1^{\prime} \leftarrow 0$
+      \STATE $ idx \leftarrow 1$
+      \WHILE{$ idx \leq |dp|$}
+        \STATE $ idx \leftarrow idx+1$
+        \IF{$idx = 2$}
+          \STATE $dp_{idx}^{\prime} \leftarrow D\left(p_{t}, p_{t-idx-1}\right)$
+        \ELSE
+          \STATE $dp_{idx}^{\prime} \leftarrow D\left(p_{t}, p_{t-idx-1}\right)+min(dp_{idx},dp_{idx-1},dp_{idx-1}^{\prime})$
+        \ENDIF
       \ENDWHILE
-      \RETURN false
+      \STATE $ dp \leftarrow dp^{\prime}$
     \ENDIF
-
-    \STATE $i \leftarrow w-1$
-    \WHILE{$i > 0$}
-      \STATE $dp_{i,t \% w+1} \leftarrow D\left(p_{i}, p_{t} \right) + \min \left(dp_{i,(t-1) \% w+1},dp_{i+1,t \% w+1},dp_{i+1,(t-1) \% w+1}\right)$
-      \STATE $i \leftarrow i-1$
-    \ENDWHILE
-
-    \STATE 将$p_{t-w+1}$从流式全局时间序列$X$中删除;
-    \IF{$\frac{dp_{1,t \% w+1}}{w} > \frac{\theta}{w-1}$}
+    \STATE 将$p_t$置于流式时间序列$X$中
+    \IF{$\frac{dp_{t}}{w} > \frac{\theta_1}{w-1}$}
       \RETURN false
     \ELSE
       \RETURN true
@@ -492,18 +494,14 @@ $O(n)$，远远高于基于DTW距离的对称模式挖掘算法，
   \end{algorithmic}
 \end{algorithm}
 
-
 \section{本章小结}
 本章主要介绍了全局时间序列对称模式挖掘的整体框架和算法细节。
 首先定义了对于完整的全局时间序列如何度量对称性，根据全局最优匹配
 和区间动态规划的算法思想设计了全局对称性度量算法。然后，
 在先验阈值可能缺省的前提下，3.2节通过分析时间序列
-数据特征，根据数据点差分距离的平均值确定了对称度阈值。
-并在3.3节利用对称度阈值过滤得到了全局对称模式。
+数据特征，根据数据点差分距离的平均值确定了全局对称度阈值。
+并在3.3节利用全局对称度阈值过滤得到了全局对称模式。
 最后，本文通过优化对称度计算方式
 将全局对称模式挖掘算法扩展到了流式数据领域。
 根据第5章的实验证明，本节所定义的全局对称模式挖掘算法
 在不同来源的数据集上具有更高的准确性和鲁棒性。
-而且，由于根据流式时间序列的数据特点对对称度计算方式进行优化，
-全局流式对称模式挖掘算法在时间效率上比基于动态时间规整的算法
-高出了一个阶数，在实际工业场景具有广泛的应用价值。

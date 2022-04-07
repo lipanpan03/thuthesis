@@ -39,7 +39,8 @@ UCR中每类数据集重的时间序列长度都相同。
   \label{tab:experiment_enviroment}
 \end{table}
 
-\section{全局对称模式挖掘实验}
+\section{全局对称模式挖掘效果评估实验}
+
 由于时间序列的数据值是连续数据，
 具有一定的随机性和波动性，不同于对称字符串，
 现有研究中并不存在一个明确统一的对称性度量算法。
@@ -111,8 +112,6 @@ UCR中每类数据集重的时间序列长度都相同。
   \end{tabular}
   \label{tab:experiment_algorithm}
 \end{table}
-
-\subsection{全局对称模式挖掘效果评估}
 
 首先在对称数据集上进行对称模式挖掘实验，分析不同数据集
 时间序列的对称度结果，以及对称度阈值对对称模式挖掘的影响。
@@ -303,9 +302,6 @@ symmetry算法的召回率非常高，几乎是基于DTW距离的对称性度量
   \label{tab:experiment_global_algo}
 \end{table}
 
-\subsection{基于流式数据的全局对称模式挖掘性能评估}
-
-
 \section{分段对称模式挖掘算法实验}
 
 5.2节对全局对称模式挖掘算法进行了效果评估实验。除了具有
@@ -353,7 +349,7 @@ symmetry算法的召回率非常高，几乎是基于DTW距离的对称性度量
   \label{tab:segment_dataset}
 \end{table}
 
-\section{分段对称模式挖掘效果和性能评估}
+\subsection{分段对称模式挖掘效果和性能评估}
 
 对于总点数和对称模式长度约束不同的时间序列，
 需要设定一个评价标准验证分段对称模式挖掘算法的效果。
