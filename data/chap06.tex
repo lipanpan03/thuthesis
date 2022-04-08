@@ -53,6 +53,13 @@ IoTDB为用户提供了一个用于时间序列数据分析的自定义模板函
 全局对称性度量和对称度阈值确定都可以在函数处理中由算法确定。
 在具体实现中，为方便用户使用，本算法提供了阈值（threshold）参数，
 可以由领域专家自行指定对称度阈值，若不指定，则采用对称度阈值确定算法进行计算。
+\begin{figure}
+    \centering
+    \includegraphics[width=0.55\linewidth]{global_symmetry_algorithm.PNG}
+    \caption{全局对称模式挖掘算法流程图}
+    \label{fig:global_algorithm_process}
+\end{figure}
+
 本算法用到了UDTF中定义的四个接口，具体实现方式如下所示：
 \begin{itemize}
 \item validate：验证算法的参数是否输入正确，threshold代表时间序列的
@@ -69,15 +76,10 @@ IoTDB为用户提供了一个用于时间序列数据分析的自定义模板函
         \item 由计算得到的全局对称度和对称度阈值判定输入时间序列是否属于对称模式。
     \end{enumerate}
 \item terminate：将全局时间序列是否具有对称性的判定结果输出到collector中。
-\begin{figure}
-    \centering
-    \includegraphics[width=0.50\linewidth]{global_symmetry_algorithm.PNG}
-    \caption{全局对称模式挖掘算法流程图}
-    \label{fig:global_algorithm_process}
-  \end{figure}
 \end{itemize}
 
 \section{分段对称模式挖掘算法实现}
+
 分段对称模式挖掘算法的处理过程和全局对称模式挖掘算法有所不同，
 分段算法是通过将时间序列划分为不同的子段分别挖掘对称模式的。
 结合IoTDB将整条时间序列数据划分为不同的Chunk和Page进行存储，
@@ -88,13 +90,6 @@ IoTDB为用户提供了一个用于时间序列数据分析的自定义模板函
 直接利用算法~\ref{alg:symmetric_pattern}计算即可。
 但分段算法的原生UDF实现方式却需要在计算时考虑元数据，
 计算流程较为复杂。
-如图~\ref{fig:iotdb_segement}所示，根据是否利用元数据
-分段对称模式相关的元数据可以使用不同的算法进行模式挖掘。若有
-元数据，则直接利用
-根据第4章的计算流程，除了需要输入一条完整的时间序列数据，
-还需要输入分段对称模式窗口大小，以及由用户自定义的对称度阈值。
-对于算法的输出，由于现在的UDTF并不支持分组的结果展示，
-将所有的对称模式拼接到一起展示又扰乱了展示结果。
 
 \begin{figure}
     \centering
@@ -102,6 +97,26 @@ IoTDB为用户提供了一个用于时间序列数据分析的自定义模板函
     \caption{基于IoTDB的分段对称模式挖掘流程}
     \label{fig:iotdb_segement}
   \end{figure}
+
+图~\ref{fig:iotdb_segement}展示了基于IoTDB的分段对称模式
+挖掘算法流程。算法在读入时间序列$X$和子序列长度约束$w$之后，
+首先需要判断是否存在可以利用的元数据。
+元数据的可用性必须满足三个条件，一是
+在写入时已完成元数据计算并持久化到TsFile中，
+二是写入时从系统配置中读取的子序列长度约束必须和输入的约束$w$
+相同，三是查询的范围必须包含完整Page。
+经过可用性检验，如果有对应的元数据，则直接合并元数据
+就可以得到分段模式的数量。
+反之，则还需要重新根据算法4.2加载原始时间序列并挖掘
+分段对称模式。最终，算法输出分段对称模式挖掘得到的数量结果。
+
+% 元数据的可用性必须满足三个条件，一是
+% 在写入过程中完成计算并持久化到TsFile中，另一个是
+% 查询的范围必须包含完整Page。尽管Page中存在元数据但查询时
+% 若并未包含Page中所有的时间序列，则仍然需要加载原始数据挖掘对称模式。
+
+% 此外，若要使用
+
 
 % 因此，在本算法的实现中，对于每一个分段对称模式，算法只输出
 % 对称模式的起始时间点和其对称度信息，具体的计算流程如下所示：
@@ -128,6 +143,7 @@ IoTDB为用户提供了一个用于时间序列数据分析的自定义模板函
 在实现了对称模式挖掘的算法逻辑之后，用户可以使用两种方式
 执行算法并对结果进行查询。一种是利用IoTDB-Client命令行，
 另一种是在Apache Zepplin上通过前端UI进行查询。
+以全局对称模式挖掘数据集和算法为例，
 在命令行上，用户登录客户端之后，直接输入调用UDF函数的SQL语句
 进行查询，查询结果如图~\ref{fig:iotdb_client_symptn}所示。
 直接使用select语句就可以查询全局和分段对称模式的挖掘结果。
@@ -141,30 +157,28 @@ IoTDB为用户提供了一个用于时间序列数据分析的自定义模板函
 不适合商业化用户使用。因此，需要配置部署一个直观的前端查询方式。
 \begin{figure}
     \centering
-    \subcaptionbox{数据集\label{fig:gsymptn_input}}
-    {\includegraphics[width=0.86\linewidth]{gsymptn_input.PNG}}
-    \subcaptionbox{查询结果\label{fig:gsymptn_output}}
+    \subcaptionbox{GunPoint数据集\label{fig:gsymptn_input}}
+    {\includegraphics[width=0.86\linewidth]{gun_point_system.png}}
+    \subcaptionbox{全局对称模式查询结果\label{fig:gsymptn_output}}
     {\includegraphics[width=0.86\linewidth]{gsymptn_output.PNG}}
-    \caption{在IoTDB-Client运行对称模式挖掘算法的结果查询展示}
+    \caption{在IoTDB-Client运行全局对称模式挖掘算法的结果查询展示}
     \label{fig:iotdb_client_symptn}
 \end{figure}
 
 Apache Zepplin是一个是一个基于网页的交互式数据分析系统。
 用户可以通过Zeppelin连接IoTDB数据源并使用SQL进行交互式查询操作。
 图~\ref{fig:iotdb_zepplin_symptn}中展示了在Zepplin上进行
-对称模式挖掘结果计算并查询的方式，图中上半部分是在Gun point
-数据集中挖掘判定全局对称模式。利用Zepplin自带的散点图和折线图
-用户可以方便的观察出Gun point数据集中的时间序列具有全局对称性。
-最终的查询结果也印证了直观的判断。图中下半部分是在挖掘机工况
-数据集上挖掘分段对称模式，在Zepplin的输入框中直接输入select语句
-就可以像IoTDB-Client命令行一样执行查询，通过前端的各类统计图
-可以方便的观察到分段对称模式的数量信息，通过与分段算法
-的结果进行对比，可以验证分段对称模式挖掘算法的效果。
-
+对称模式挖掘结果计算并查询的方式，图中上半部分是在运输车轨迹GPS经度
+数据集中挖掘判定分段对称模式。利用Zepplin自带的散点图和折线图
+用户可以方便的观察出运输车轨迹数据集中的时间序列具有16个分段对称模式。
+图中下半部分是在运输车轨迹数据集上挖掘分段对称模式，在Zepplin的输入框中直接输入select语句
+就可以像IoTDB-Client命令行一样执行查询，
 \begin{figure}
     \centering
+    \includegraphics[width=0.86\linewidth]{zepplin_truck_data.PNG}
+    \caption{运输车轨迹数据集}
     \includegraphics[width=0.86\linewidth]{gsymptn_zepplin.png}
-    \caption{在Apache zepplin运行对称模式挖掘算法的结果查询展示}
+    \caption{在Apache zepplin运行分段对称模式挖掘算法的结果查询展示}
     \label{fig:iotdb_zepplin_symptn}
 \end{figure}
 
