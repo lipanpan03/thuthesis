@@ -494,47 +494,48 @@ DTW和FastDTW方法甚至没有挖掘出一个对称模式。相比之下，Symm
 基于FastDTW距离的算法。
 
 \subsection{基于IoTDB的分段对称模式挖掘算法性能评估}
-
-5.3.1节对分段对称模式挖掘算法进行了实验验证和性能分析，
-在实验所用到的数据集中，运输车GPS轨迹数据集和挖掘机
-工况数据集的对称模式长度并不严格相同。因此，本节在这两个
-数据集上对带有自适应窗口的对称模式挖掘算法的效果进行评估，
-以证明自适应窗口能提高模式挖掘的完整性。
-
-在数据质量中，完整性表示未被损坏的数据在总样本中的比例。本文引申为
-正确挖掘的对称模式在时间序列整体中所占的比重。因为运输车
-轨迹和挖掘机工况数据均属于连续作业产生的具有连续对称性
-的时间序列数据，理论上应像正弦函数集一样由对称子模式首尾相连而成，
-因为操作随机和传感器采样不准导致时间序列出现噪声和形状变化。
-而经过对称模式挖掘算法挖掘出的时间序列均是具有对称性的，挖掘出的对称模式
-总点数越多表明算法越少受到原始数据误差的影响。若用$S_{cal}$表示
-从时间序列$X$中挖掘得到的对称模式集合，则公式~\ref{eq:completeness}
-展示了完整性的度量结果。
-
-\begin{equation}
-    Completeness = \frac{\left|S_{cal}\right|}{\left|X\right|}
-    \label{eq:completeness}
-\end{equation}
+第4.4章节中提到了基于Apache IoTDB系统的两种
+不同分段对称模式挖掘算法的实现。
+其中，基于UDF的实现并不会在写入时预计算元数据信息，
+而是在每次查询时都加载全部数据重新挖掘分段对称模式。
+这种实现适用于写入负载远远高于查询负载的场景，
+因为其写入性能不受模式挖掘算法的影响，
+而查询阶段则因为每次都要重新挖掘分段对称模式而成为性能瓶颈所在。
+在真实的应用中，多写少读的场景是非常罕见的。据统计，
+在OLTP和OLAP系统中，查询负载和写入负载的比例大致是10比1。
+因此，需要根据IoTDB的存储方式设计能提高查询性能的分段对称模式挖掘算法实现。
+IoTDB在数据写入阶段会生成并保存最值、总和等一系列元数据信息，
+由此，本文实现了基于元数据的分段算法实现，在写入时挖掘每个分段的
+对称模式，在查询时通过合并元信息得到最终结果。基于元数据的算法
+虽然会损耗部分写入性能，但其对查询性能的提高非常明显。
 
 \begin{figure}
-    \centering
-    \subcaptionbox{运输车GPS轨迹数据集\label{fig:truck_completeness}}
-    {\includegraphics[width=0.43\linewidth]{truck_completeness.png}}
-    \subcaptionbox{挖掘机工况数据集\label{fig:excavator_completeness}}
-    {\includegraphics[width=0.43\linewidth]{excavator_completeness.png}}
-    \caption{不同数据集自适应窗口对挖掘对称模式完整性的影响}
-    \label{fig:completeness}
+  \centering
+  \subcaptionbox{运输车GPS轨迹数据集\label{fig:truck_write}}
+  {\includegraphics[width=0.43\linewidth]{truck_iotdb_write.png}}
+  \subcaptionbox{挖掘机工况数据集\label{fig:excavator_write}}
+  {\includegraphics[width=0.43\linewidth]{excavator_iotdb_write.png}}
+  \caption{不同数据量下基于UDF和基于元数据的算法写入性能对比}
+  \label{fig:iotdb_write}
 \end{figure}
-本文通过调节基础窗口$w_{base}$的大小，在运输车GPS数据集和
-挖掘机工况数据集上进行了实验，实验结果如图~\ref{fig:completeness}
-所示。因为运输车GPS轨迹中的对称模式长度最小为200，最长为500左右；
-基础窗口$w_{base}$和最大窗口$w_{max}$的大小设置为200和500，
-而挖掘机工况序列中的对称模式长度最小为300，最长为800左右，
-因此基础窗口$w_{base}$和最大窗口$w_{max}$的大小设置为300和800。
-两组实验$w_{base}$均在长度为100的范围内变化。从实验结果中可以看出，
-随着$w_{base}$长度约束的减小，带自适应窗口的对称模式挖掘算法完整性
-比较稳定甚至略有上升，而不带自适应窗口的算法则完整性基本呈下降趋势。
-证明了自适应窗口对挖掘对称模式完整性的积极影响。
+
+\begin{figure}
+\centering
+\subcaptionbox{运输车GPS轨迹数据集\label{fig:truck_query}}
+{\includegraphics[width=0.43\linewidth]{truck_iotdb_query.png}}
+\subcaptionbox{挖掘机工况数据集\label{fig:excavator_query}}
+{\includegraphics[width=0.43\linewidth]{excavator_iotdb_query.png}}
+\caption{不同数据量下基于UDF和基于元数据的算法查询性能对比}
+\label{fig:iotdb_query}
+\end{figure}
+
+本节在运输车GPS轨迹数据集和挖掘机
+工况数据集上对基于UDF和基于元数据的分段对称模式算法实现
+的写入和查询性能进行了实验，实验结果如图~\ref{fig:iotdb_write}
+和~\ref{fig:iotdb_query}所示。
+从图中可以看出，尽管基于元数据的分段算法写入性能略有下降，
+但其查询分析性能却是基于UDF算法的上百倍。证明了基于
+元数据的分段算法在查询负载较重的场景中具有重要的研究价值。
 
 \section{本章小结}
 本章使用了八个不同的数据集对第三章和第四章设计的对称模式挖掘算法进行了

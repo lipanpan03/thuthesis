@@ -146,7 +146,7 @@ IoTDB为用户提供了一个用于时间序列数据分析的自定义模板函
 以全局对称模式挖掘数据集和算法为例，
 在命令行上，用户登录客户端之后，直接输入调用UDF函数的SQL语句
 进行查询，查询结果如图~\ref{fig:iotdb_client_symptn}所示。
-直接使用select语句就可以查询全局和分段对称模式的挖掘结果。
+直接使用Select语句就可以查询全局和分段对称模式的挖掘结果。
 使用IoTDB Client命令行进行查询的好处是查询便捷，
 直接登陆客户端即可查询，不需要重新部署其他工具。
 但是，在命令行查询的结果只能通过表格的方式
@@ -158,9 +158,9 @@ IoTDB为用户提供了一个用于时间序列数据分析的自定义模板函
 \begin{figure}
     \centering
     \subcaptionbox{GunPoint数据集\label{fig:gsymptn_input}}
-    {\includegraphics[width=0.86\linewidth]{gun_point_system.png}}
+    {\includegraphics[width=0.76\linewidth]{gun_point_system.png}}
     \subcaptionbox{全局对称模式查询结果\label{fig:gsymptn_output}}
-    {\includegraphics[width=0.86\linewidth]{gsymptn_output.PNG}}
+    {\includegraphics[width=0.76\linewidth]{gun_point_system_result.png}}
     \caption{在IoTDB-Client运行全局对称模式挖掘算法的结果查询展示}
     \label{fig:iotdb_client_symptn}
 \end{figure}
@@ -168,16 +168,18 @@ IoTDB为用户提供了一个用于时间序列数据分析的自定义模板函
 Apache Zepplin是一个是一个基于网页的交互式数据分析系统。
 用户可以通过Zeppelin连接IoTDB数据源并使用SQL进行交互式查询操作。
 图~\ref{fig:iotdb_zepplin_symptn}中展示了在Zepplin上进行
-对称模式挖掘结果计算并查询的方式，图中上半部分是在运输车轨迹GPS经度
-数据集中挖掘判定分段对称模式。利用Zepplin自带的散点图和折线图
-用户可以方便的观察出运输车轨迹数据集中的时间序列具有16个分段对称模式。
-图中下半部分是在运输车轨迹数据集上挖掘分段对称模式，在Zepplin的输入框中直接输入select语句
+分段对称模式挖掘结果计算并查询的方式，
+图中上半部分是在运输车轨迹GPS经度
+数据集随时间的变化情况。利用Zepplin自带的折线图
+用户可以方便的观察出运输车轨迹数据集中的时间序列具有
+16个分段对称模式。
+图中下半部分是在运输车轨迹数据集上挖掘分段对称模式，
+在Zepplin的输入框中直接输入Select语句
 就可以像IoTDB-Client命令行一样执行查询，
+发现算法的计算结果和真实结果一致。
 \begin{figure}
     \centering
     \includegraphics[width=0.86\linewidth]{zepplin_truck_data.PNG}
-    \caption{运输车轨迹数据集}
-    \includegraphics[width=0.86\linewidth]{gsymptn_zepplin.png}
     \caption{在Apache zepplin运行分段对称模式挖掘算法的结果查询展示}
     \label{fig:iotdb_zepplin_symptn}
 \end{figure}
