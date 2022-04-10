@@ -4,7 +4,7 @@
 本章将对时间序列和对称模式的概念及国内外的研究现状进行详细介绍。
 其中 2.1 节将介绍时间序列和对称模式的概念；2.2 节将介绍
 时间序列相似性度量的方法和分类；2.3 节将介绍目前时间序列
-模式挖掘的国内外研究；2.4 节将对本章进行总结。
+模式挖掘的国内外研究；2.4 节总结本章的研究内容。
 
 \section{时间序列与对称模式}
 作为大数据技术及人工智能技术在工业领域应用的数据支撑，
@@ -45,18 +45,26 @@
 \end{definition}
 
 \begin{definition}
-  对称模式$M$包含两种类别，全局对称模式和分段对称模式。
+  对称模式包含两种类别，全局对称模式和分段对称模式。
 
   全局对称模式指具有全局对称性的时间序列。
   分段对称模式指从具有分段对称性的时间序列挖掘出的数量
-  最多且不重叠的对称子序列组成的集合。
-  全局对称模式是分段对称模式的特例。 
+  最多且不重叠的对称子序列组成的集合。 
   
 \end{definition}
 
-综合以上定义，挖掘对称模式的算法可以形式化定义为，给定一个时间序列$X$，
-子序列长度约束$w$，子序列相似度约束$d$，计算时间序列X中长度为$w$且对称度
-小于相似度约束$d$的所有不重叠时间子序列组成的对称模式$M$，
+综合以上定义，挖掘全局对称模式的算法可以形式化定义为，
+给定一个时间序列$X$和由专家指定或自适应生成的全局对称度阈值$d$，
+满足公式~\ref{eq:global_symmetric_pattern}的时间序列即属于
+全局对称模式。
+\begin{equation}
+  M = \{X | symmetry(X) \leq d\}
+  \label{eq:global_symmetric_pattern}
+\end{equation}
+而挖掘分段对称模式的算法可以形式化定义为，给定一个时间序列$X$和
+子序列长度约束$w$，通过确定子序列对称度阈值$d$，
+计算时间序列$X$中长度为$w$且对称度小于阈值$d$的
+所有不重叠时间子序列$S$组成的分段对称模式集合$M$，
 同时保证时间子序列的数目最多，优化目标和约束如式~\ref{eq:symmetric_pattern}所示
 
 \begin{equation}
@@ -69,12 +77,14 @@
   \label{eq:symmetric_pattern}
 \end{equation}
 
-图~\ref{fig:symmetric_result}展示了对称模式挖掘的结果，
+图~\ref{fig:symmetric_result}展示了全局和分段对称模式挖掘的结果，
 计算得到的对称模式可以为后续的数据分析和序列预测提供关键参考。
-具体模式挖掘方法可见第3章。
 \begin{figure}
   \centering
-  \includegraphics[width=0.86\linewidth]{symmetric_result.png}
+  \subcaptionbox{全局对称模式\label{fig:global_symmetry_result}}
+    {\includegraphics[width=0.49\linewidth]{global_symmetry_result.png}}
+  \subcaptionbox{分段对称模式\label{fig:segmented_symmetry_result}}
+    {\includegraphics[width=0.49\linewidth]{symmetric_result.png}}
   \caption{对称模式挖掘结果}
   \label{fig:symmetric_result}
 \end{figure}
