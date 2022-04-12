@@ -77,8 +77,8 @@ $2 \times|X| \times w-w^{2}+w$个状态。
 效率高一个阶数。
 \begin{figure}
   \centering
-  \includegraphics[width=0.76\linewidth]{fregment.png}
-  \caption{分段时间序列推导流程}
+  \includegraphics[width=0.86\linewidth]{fregment.png}
+  \caption{分段时间序列对称度状态推导流程}
   \label{fig:fregment}
 \end{figure}
 
@@ -106,8 +106,8 @@ $2 \times|X| \times w-w^{2}+w$个状态。
 基于时间序列数据特征的阈值确定算法已在3.1.2节中详述，本节只
 讨论基于分布特征的对称度阈值确定算法，即$\theta_2$。
 
-在同一类时间序列中，长度相同的对称子序列的对称度较小，
-而非对称子序列的对称度较大，这之间存在一个天然的阈值划分。
+在同一类时间序列中，对称子序列的对称度较小，
+而非对称子序列的对称度较大，这之间存在一个天然的阈值划分\cite{2022968}。
 根据聚类方法\cite{DBLP:conf/kdd/EsterKSX96}和
 自然断点分类的划分原则\cite{DBLP:journals/pami/Cheng95}，
 同一个类簇中数据的相似度高而不同类簇中数据的相似度低。
@@ -136,9 +136,9 @@ $2 \times|X| \times w-w^{2}+w$个状态。
 \begin{figure}
   \centering
   \subcaptionbox{运煤车轨迹子序列对称度\label{fig:natural_break-a}}
-  {\includegraphics[width=0.42\linewidth]{natural_break-a.png}}
+  {\includegraphics[width=0.49\linewidth]{natural_break-a.png}}
   \subcaptionbox{挖掘机工况子序列对称度\label{fig:natural_break-b}}
-  {\includegraphics[width=0.42\linewidth]{natural_break-b.png}}
+  {\includegraphics[width=0.49\linewidth]{natural_break-b.png}}
   \caption{运输车轨迹和挖掘机工况子序列对称度分布}
   \label{fig:natural_break}
 \end{figure}
@@ -219,7 +219,7 @@ $2 \times|X| \times w-w^{2}+w$个状态。
 为了充分利用时间序列的信息，本文以对称子序列的数量最大值为
 优化目标。根据贪心算法的思想，若上一个选择的对称子序列为$s_i$
 其长度为$w$，则下一个对称子序列的贪心策略为从数据点$i+w$
-开始，选择第1个长度为$w$的对称子序列, 可以保证能得到数量最多的
+开始，选择第1个长度为$w$的对称子序列，可以保证能得到数量最多的
 不重叠子序列。换言之，对于两个长度为$w$且存在重叠的时间序列，选择开始点最早的
 时间序列能保证挖掘到数量最多的对称子序列。具体证明如下：假设存在3个长度为$w$的对称子序列
 $A=\left(p_{i}, p_{i+1}, \dots, p_{i+w-1}\right)$，$B=\left(p_{j}, p_{j+1}, \dots, p_{j+w-1}\right)$和
@@ -300,8 +300,9 @@ DTW 计算的$O\left(|X| \times w^{2}\right)$，为后续的数据分析提供�
 
 \section{基于IoTDB的分段对称模式挖掘算法设计}
 
-Apache IoTDB是面向时间序列的原生数据库，是一个集
-数据收集、存储和分析于一体的数据管理引擎，不仅提供了类SQL
+Apache IoTDB是
+一个对时间序列数据提供收集、存储、管理和分析
+一体化功能的软件系统，不仅提供了丰富
 的数据查询功能，而且预留了基于元数据和UDF（User Defined 
 Function）接口的数据分析功能，具有高度的可扩展性。本节将利用
 IoTDB提供的数据分析接口设计并优化分段对称模式挖掘算法。

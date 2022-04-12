@@ -39,7 +39,7 @@
 由于不同来源的时间序列
 数据范围往往差距很大，图~\ref{fig:data_range}展示了运输车运输过程中的经度工况时间序列和
 有规律心跳过程中力感测电阻器（FSR）信号的变化时间序列，运输车经度的在
-(106.89,106.9)范围内，而FSR信号在(-4000,-1000)范围内。
+$(106.89,106.9)$范围内，而FSR信号在$(-4000,-1000)$范围内。
 除了范围之外，很明显，两个数据来源的数据跨度差别也很大。
 为使用统一的算法框架进行对称模式挖掘，需要对数据进行标准化处理。
 对时间序列$X=\left(\left(t_{1}, x_{1}\right),\left(t_{2}, x_{2}\right), \ldots,\left(t_{n}, x_{n}\right)\right)$
@@ -63,9 +63,9 @@
 \begin{figure}
   \centering
   \subcaptionbox{挖掘机经度\label{fig:data_range-a}}
-  {\includegraphics[width=0.43\linewidth]{truck_lo.png}}
+  {\includegraphics[width=0.49\linewidth]{truck_lo.png}}
   \subcaptionbox{心率FSR信号\label{fig:data_range-b}}
-  {\includegraphics[width=0.43\linewidth]{heart_fsr.png}}
+  {\includegraphics[width=0.49\linewidth]{heart_fsr.png}}
   \caption{不同来源时间序列数据分布范围}
   \label{fig:data_range}
 \end{figure}
@@ -85,7 +85,7 @@
 又优化了对称度的计算效率。
 \begin{figure}
   \centering
-  \includegraphics[width=0.86\linewidth]{beijing_temp.png}
+  \includegraphics[width=0.76\linewidth]{beijing_temp.png}
   \caption{北京市月平均气温变化}
   \label{fig:beijing_temp}
 \end{figure}
@@ -108,14 +108,16 @@ $X=\left(\left(t_1,x_1 \right),\left(t_2,x_2\right),\dots,
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.76\linewidth]{frontend_match.png}
+  \includegraphics[width=0.66\linewidth]{frontend_match.png}
   \caption{对称时间序列首尾匹配候选点}
   \label{fig:frontend_match}
 \end{figure}
 
-接下来，本节将对时间序列的对称度算法进行标准的形式化推导。给定一条时间序列$X=\left(\left(t_1,x_1 \right),\left(t_2,x_2\right),\dots,
-  \left(t_n,x_n \right)\right)$，以任意两点间的距离确立$n \times m$的
-距离矩阵$D_{n \times m}$，矩阵中的每个元素由公式~\ref{eq:distance_matrix}计算而来
+接下来，本节将对时间序列的对称度算法进行标准的形式化推导。
+对于全局时间序列$X=\left(\left(t_1,x_1 \right),\left(t_2,x_2\right),\dots,
+  \left(t_n,x_n \right)\right)$，
+计算每两个点之间的距离组成$n \times n$的
+距离矩阵$D_{n \times n}$，矩阵中的每个元素由公式~\ref{eq:distance_matrix}计算而来
 \begin{equation}
   D\left(i, j\right)=\left\|x_{i}-x_{j}\right\|_{w}
   \label{eq:distance_matrix}
@@ -127,10 +129,11 @@ $D\left(i, j\right)$为点$p_i$与$p_j$间的距离，$i,j=1,2,\dots,n$。
 则距离矩阵$D_{n \times m}$只需要计算反对角线以上的斜三角矩阵即可。
 为了计算$X$的对称度，需要找到一条最优的匹配路径
 $R_{best}=\left(r_1,r_2,\dots,r_k \right),\left⌊n/2\right⌋ \leq
-  k < n$，使得$X$的累积匹配距离值达到最小, $r_k$表示该匹配路径元素在
-距离矩阵中的位置，即$r_k=\left(i,j\right)_k$表示$p_i$与$p_j$之间的匹配关系，
-可知$D\left(r_k \right)=D\left(i,j\right)_k$一般存在着多条匹配路径，
-有效的弯曲路径$R$必须符合以下3个条件：
+  k < n$，使得$X$的匹配距离之和最小。 
+其中，$r_k$为匹配路径中的第$k$个点，
+若$r_k=\left(i,j\right)_k$，则其表示$p_i$与$p_j$之间的对称匹配。
+由距离和路径的计算方式可知，距离矩阵中通常存在着多条
+匹配路径，有效的匹配路径$R$要满足以下3个条件：
 \begin{enumerate}
   \item 边界性：$r_{1} \in\{(i, i),(i, i+1) \mid 1 \leq i \leq n\}, \quad r_{k}=(1, n)$
   \item 单调性：给定$r_{k}=(i, j)$和$r_{k+1}=\left(i^{\prime}, j^{\prime}\right), \quad i^{\prime} \leq i, j^{\prime} \geq j$
@@ -138,9 +141,11 @@ $R_{best}=\left(r_1,r_2,\dots,r_k \right),\left⌊n/2\right⌋ \leq
 \end{enumerate}
 
 边界性是确保$R$的起点$r_1$在相似度矩阵的反对角线或者相邻斜线上，
-而终点$r_k$在矩阵的右上角$\left(1,n\right)$。
-单调性和连续性是为了保证匹配路径的下一个点在当前点的上方、右上方或右方。
-在所有有效的路径中, 找到唯一且最优的路径使得累积匹配距离和达到最小,
+而终点$r_k$在矩阵的右上顶点$\left(1,n\right)$。
+单调性和连续性是为了
+确保匹配路径的每个后继点都在前驱点的上侧、右侧或右上侧。
+在所有可行的匹配路径中进行选择，
+以匹配距离之和最小为目标找到最佳路径，
 公式~\ref{eq:best_route}即为优化目标：
 \begin{equation}
   D(X)=\min \left\{\sum_{k=1}^{K} D\left(r_{k}\right)\right\}
@@ -164,8 +169,9 @@ $R_{best}=\left(r_1,r_2,\dots,r_k \right),\left⌊n/2\right⌋ \leq
 $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 则该状态可以由$\{D P(i+1, j), D P(i, j-1), D P(i+1, j-1)\}$中
 最小的一个推导而来，这种小区间和大区间的状态具有严格单调性的模型非常
-符合区间动态规划算法思想。因此，为了求解式~\ref{eq:best_route},
-利用区间动态规划方法构造一个代价矩阵$DP$, 其中每个元素通过式~\ref{eq:dp_item}得到：
+符合区间动态规划算法思想。因此，为了求解式~\ref{eq:best_route}，
+根据区间动态规划思想构造一个状态矩阵$DP$， 
+其中每个元素通过式~\ref{eq:dp_item}得到：
 \begin{equation}
   D P(i, j)=D(i, j)+\min \left\{\begin{array}{c}
     D P(i+1, j) \\
@@ -178,7 +184,7 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 其中：$1 \leq i \leq j \leq n, D P(i, i)=0, D P(i, i+1)=D(i, i+1)$。
 式~\ref{eq:dp_item}表示当前区间的匹配累积距离等于当前点的距离值加上紧邻
 3个区间匹配累积距离的最小值，$D P(1, n)$便是时间序列X的最小匹配累积
-代价，即对称度。得到对称度后, 为了得到最优匹配路径,
+代价，即对称度。得到对称度后，为了得到最优匹配路径，
 再反向以$r_k$为起点寻找匹配路径。直到$i=j$或者$i=j-1$时，
 寻找过程结束，最终得到完整的匹配路径。通过累积计算匹配路径中每对匹配点之间的距离，
 可以得到匹配点的距离之和，最终计算得到的$DP(1,n)$即可视为时间序列$X$的对称度。
@@ -322,7 +328,7 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
   \small
   \begin{algorithmic}
     \REQUIRE 时间序列$X=\left(p_{1}, p_{2}, \dots, p_{n}\right)$
-    \ENSURE 布尔型变量，标志全局时间序列$X=\left(p_{1},p_{2},…,p_n \right)$是否为全局对称模式
+    \ENSURE 布尔型变量，标志全局时间序列$X=\left(p_{1},p_{2},\dots,p_n \right)$是否为全局对称模式
 
     \STATE $d \leftarrow calculate\_global\_symmetry(X) $
     \STATE $i \leftarrow 1$
@@ -341,7 +347,7 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 
 
 \section{全局对称模式流式挖掘算法}
-在实际场景中，经常有在对称模式发生时即时报警的应用。
+在实际场景中，经常有在对称模式发生时即时报警的应用\cite{2022968}。
 金融市场和股票分析是一个对数据的实时性要求很高的场景，
 如果在股票指数或价格时间序列出现符合某种模式的特征时能及时预报，
 将具有极大的应用价值\cite{DBLP:journals/jucs/BeheraDRMD20}。
@@ -362,7 +368,7 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 提高了算法的时间效率，将其扩展到了流式应用场景。
 \begin{figure}
   \centering
-  \includegraphics[width=0.86\linewidth]{shanghai_point.png}
+  \includegraphics[width=0.76\linewidth]{shanghai_point.png}
   \caption{上证指数自2005年至2015年单日变化情况}
   \label{fig:shanghai_point}
 \end{figure}
@@ -378,7 +384,7 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 即给定一个实时生成的时间序列$X=(p_1,p_2,\dots,p_t)$，
 需要在每个数据点$p_t$生成时，以较高的效率
 而不是重新计算的方式检测并度量全局流式时间序列$X$的对称性。
-由3.1节可知,使用$DP\left(1,t-1\right)$表示流式时间子序列
+由3.1节可知，使用$DP\left(1,t-1\right)$表示流式时间子序列
 $S=(p_1,p_2,\dots,p_{t-1} )$的对称度。因此，
 当新到来一个数据点$p_{t}$时，可以用公式~\ref{eq:stream_dp}
 计算$DP\left(1,t\right)$。然而在该公式中，
@@ -399,7 +405,7 @@ $S=(p_1,p_2,\dots,p_{t-1} )$的对称度。因此，
 图~\ref{fig:latitude_stream_matrix}展示了运煤车单次运输过程中纬度变化时间序列和
 单点实时新增时对称度状态推导的变化过程，通过观察动态规划状态
 的推导过程可知，当新增一个数据点$p_t$时，流式时间子序列
-$S=\left(p_{1},p_{2},…,p_{t-1} \right)$
+$S=\left(p_{1},p_{2},\dots,p_{t-1} \right)$
 范围之内的对称度状态不须重新推导。因为根据3.1节介绍的时间序列
 对称模式挖掘算法的数学性质，该算法满足单调性和连续性，时间序列
 $S$从$p_{1}$到$p_{t-1}$之间的对称度状态$DP\left(i,j\right)$
@@ -471,7 +477,7 @@ $p_t$的相关状态后，用新计算得到的$dp$更新旧有$dp$即可，
   \small
   \begin{algorithmic}
     \REQUIRE 新数据点$p_t$
-    \ENSURE 布尔型变量，标志流式全局时间序列$X=\left(p_{1},p_{2},…,p_t \right)$是否为流式全局对称模式
+    \ENSURE 布尔型变量，标志流式全局时间序列$X=\left(p_{1},p_{2},\dots,p_t \right)$是否为流式全局对称模式
 
     \IF{$t = 1$}
       \STATE $dp_{1} \leftarrow 0$

@@ -134,8 +134,8 @@ GunPointAgeSpan数据集上度量135条时间序列得到的平均对称度
 从侧面证明了本文提出的对称度阈值算法的重要性。
 \begin{figure}
   \centering
-  \includegraphics[width=0.86\linewidth]{symmetry.pdf}
-  \caption{对称数据集不同算法的对称性度量结果}
+  \includegraphics[width=0.76\linewidth]{symmetry.pdf}
+  \caption{对称数据集上不同算法的全局对称性度量结果}
   \label{fig:symmetry_compare}
 \end{figure}
 
@@ -176,10 +176,10 @@ GunPointAgeSpan数据集上度量135条时间序列得到的平均对称度
 \begin{figure}
   \centering
   \subcaptionbox{GunPointAgeSpan\label{fig:gun_heatmap}}
-  {\includegraphics[width=0.43\linewidth]{gun_heatmap.png}}
+  {\includegraphics[width=0.49\linewidth]{gun_heatmap.png}}
   \subcaptionbox{UMD\label{fig:umd_heatmap}}
-  {\includegraphics[width=0.43\linewidth]{umd_heatmap.png}}
-  \caption{对称模式挖掘效果随对称度阈值变化}
+  {\includegraphics[width=0.49\linewidth]{umd_heatmap.png}}
+  \caption{不同对称度阈值下全局对称模式挖掘效果}
   \label{fig:symmetry_heatmap}
 \end{figure}
 
@@ -188,8 +188,8 @@ GunPointAgeSpan数据集上度量135条时间序列得到的平均对称度
 本文使用相邻点之间的距离作为匹配点之间
 的距离阈值参考，进而得到全局时间序列的对称度阈值，以进行全局对称模式的
 挖掘。接下来本文将对表~\ref{tab:experiment_dataset}中所示
-的4个数据集进行全局对称模式挖掘算法的效果实验，并以准确率，精确率，
-召回率和F值作为效果的评价指标。在这4个数据集中，GunPointAgeSpan和UMD数据集
+的4个数据集进行全局对称模式挖掘算法的效果实验，
+并利用准确率，精确率，召回率和F值综合评价挖掘效果。在这4个数据集中，GunPointAgeSpan和UMD数据集
 具有对称性，而MixedShapes和GestureMidAirD1数据集没有对称性。
 在实验过程中，本文把对称模式标记为正类（positive），把非对称模式标为负类（negative）。
 当算法在对称数据集中发现对称模式时，这类时间序列用TP表示。当算法
@@ -243,8 +243,8 @@ symmetry算法挖掘对称模式的准确率远高于其他算法。
 的匹配方式。
 \begin{figure}
   \centering
-  \includegraphics[width=0.86\linewidth]{accuracy.pdf}
-  \caption{不同对称模式挖掘算法的准确率度量结果}
+  \includegraphics[width=0.76\linewidth]{accuracy.pdf}
+  \caption{不同全局对称模式挖掘算法的准确率结果}
   \label{fig:accuracy_compare}
 \end{figure}
 
@@ -264,7 +264,7 @@ F值就是用来综合评估算法的精确率和召回率。在实验中，本�
 \begin{figure}
   \centering
   \includegraphics[width=0.86\linewidth]{f-score.pdf}
-  \caption{不同对称模式挖掘算法的F-Score度量结果}
+  \caption{不同对称模式挖掘算法的F-Score结果}
   \label{fig:fscore_compare}
 \end{figure}
 
@@ -308,22 +308,23 @@ symmetry算法的召回率非常高，几乎是基于DTW距离的对称性度量
 5.2节对全局对称模式挖掘算法进行了效果评估实验。除了具有
 全局对称性的时间序列，更多的对称模式以子模式的方式嵌入在
 长时间序列之中，需要采用分段对称模式挖掘算法对其进行挖掘。
-本文采用1个人工数据集和3个真实数据集进行实验。具体的数据信息
-如表~\ref{tab:segment_dataset}中所示。
-其中，人工数据集包含30000个数据点，
+本文采用了1个人工合成数据集和3个真实工业数据集，
+具体的数据信息如表~\ref{tab:segment_dataset}中所示。
+其中，人工合成数据集由30000个点组成，
 除部分噪声影响之外，原始数据为以360个点为一个完整周期的
 正弦函数采样数据。
-真实数据集1为GPS轨迹数据，共33500个数据点。
+真实工业数据集1来源于GPS轨迹数据，包含33500个点。
 主要采集了运输车运输货物在5天内的行驶轨迹形成的GPS信息，
 每一趟GPS轨迹信息具有物理上的对称性。由于车速
-和运输路线的不同，运输车运输一趟的平均时间为 30 分钟，最长为 48 分钟。
-真实数据集2为等时间间隔采样的挖掘机挖斗数据，
+和运输路线的不同，运输车运输一趟的
+平均时间为 30 分钟，最长为 48 分钟。
+真实工业数据集2为等时间间隔采样的挖掘机挖斗数据，
 共35189个数据点。
 主要采集了挖掘机在挖掘过程中各个工况的变化，
 挖掘机作业形成的工况时间序列也具有分段对称性。
 但由于挖掘机每次挖掘的坑道不一致，且两次作业间存在等
 待期，导致挖掘机工况对称模式持续的时间长度变化较大。
-真实数据集3为上证指数2016年至2019年以天为单位变化
+真实工业数据集3为上证指数2016年至2019年以天为单位变化
 的时间序列，共有3186个数据点。
 由于股票数据具有长期增长的趋势性特征，其对称模式出现较少，
 可通过人工标注对称模式作为正确结果。
@@ -361,7 +362,7 @@ symmetry算法的召回率非常高，几乎是基于DTW距离的对称性度量
 令$r_{truth}$作为时间序列对称模式的真实数量，
 $r_{cal}$作为挖掘出的时间序列对称模式的数量。
 则用$\delta$评估挖掘结果和真实结果的相似程度，表示挖掘效果
-的的误差率。$\delta$越小, 说明挖掘结果越精确。偏差率$\delta$
+的误差率。$\delta$越小，说明挖掘结果越精确。偏差率$\delta$
 作为算法的评价指标同样具有应用价值，实际工业场景中常有
 统计对称模式数量的需求，例如挖掘机通过一天内的运输趟数记工打卡，
 偏差率表示挖掘的运输趟数和真实运输趟数之间的差距，是算法优劣的重要指标。
@@ -434,21 +435,21 @@ DTW和FastDTW方法甚至没有挖掘出一个对称模式。相比之下，Symm
 \begin{figure}
   \centering
   \subcaptionbox{合成数据集\label{fig:sin_1}}
-  {\includegraphics[width=0.43\linewidth]{sin_1.png}}
+  {\includegraphics[width=0.49\linewidth]{sin_1.png}}
   \subcaptionbox{合成数据集\label{fig:sin_2}}
-  {\includegraphics[width=0.43\linewidth]{sin_2.png}}
+  {\includegraphics[width=0.49\linewidth]{sin_2.png}}
   \subcaptionbox{GPS轨迹数据集\label{fig:truck_1}}
-  {\includegraphics[width=0.43\linewidth]{truck_1.png}}
+  {\includegraphics[width=0.49\linewidth]{truck_1.png}}
   \subcaptionbox{GPS轨迹数据集\label{fig:truck_2}}
-  {\includegraphics[width=0.43\linewidth]{truck_2.png}}
+  {\includegraphics[width=0.49\linewidth]{truck_2.png}}
   \subcaptionbox{工况数据集\label{fig:excavator_1}}
-  {\includegraphics[width=0.43\linewidth]{excavator_1.png}}
+  {\includegraphics[width=0.49\linewidth]{excavator_1.png}}
   \subcaptionbox{工况数据集\label{fig:excavator_2}}
-  {\includegraphics[width=0.43\linewidth]{excavator_2.png}}
+  {\includegraphics[width=0.49\linewidth]{excavator_2.png}}
   \subcaptionbox{金融数据集\label{fig:stock_1}}
-  {\includegraphics[width=0.43\linewidth]{stock_1.png}}
+  {\includegraphics[width=0.49\linewidth]{stock_1.png}}
   \subcaptionbox{金融数据集\label{fig:stock_2}}
-  {\includegraphics[width=0.43\linewidth]{stock_2.png}}
+  {\includegraphics[width=0.49\linewidth]{stock_2.png}}
   \caption{时间序列分段对称模式挖掘偏差率结果}
   \label{fig:segement_symmetry}
 \end{figure}
@@ -456,21 +457,21 @@ DTW和FastDTW方法甚至没有挖掘出一个对称模式。相比之下，Symm
 \begin{figure}
   \centering
   \subcaptionbox{合成数据集\label{fig:sin_time_1}}
-  {\includegraphics[width=0.43\linewidth]{sin_time_1.png}}
+  {\includegraphics[width=0.49\linewidth]{sin_time_1.png}}
   \subcaptionbox{合成数据集\label{fig:sin_time_2}}
-  {\includegraphics[width=0.43\linewidth]{sin_time_2.png}}
+  {\includegraphics[width=0.49\linewidth]{sin_time_2.png}}
   \subcaptionbox{GPS轨迹数据集\label{fig:truck_time_1}}
-  {\includegraphics[width=0.43\linewidth]{truck_time_1.png}}
+  {\includegraphics[width=0.49\linewidth]{truck_time_1.png}}
   \subcaptionbox{GPS轨迹数据集\label{fig:truck_time_2}}
-  {\includegraphics[width=0.43\linewidth]{truck_time_2.png}}
+  {\includegraphics[width=0.49\linewidth]{truck_time_2.png}}
   \subcaptionbox{工况数据集\label{fig:excavator_time_1}}
-  {\includegraphics[width=0.43\linewidth]{excavator_time_1.png}}
+  {\includegraphics[width=0.49\linewidth]{excavator_time_1.png}}
   \subcaptionbox{工况数据集\label{fig:excavator_time_2}}
-  {\includegraphics[width=0.43\linewidth]{excavator_time_2.png}}
+  {\includegraphics[width=0.49\linewidth]{excavator_time_2.png}}
   \subcaptionbox{金融数据集\label{fig:stock_time_1}}
-  {\includegraphics[width=0.43\linewidth]{stock_time_1.png}}
+  {\includegraphics[width=0.49\linewidth]{stock_time_1.png}}
   \subcaptionbox{金融数据集\label{fig:stock_time_2}}
-  {\includegraphics[width=0.43\linewidth]{stock_time_2.png}}
+  {\includegraphics[width=0.49\linewidth]{stock_time_2.png}}
   \caption{时间序列分段对称模式挖掘时间效率对比}
   \label{fig:segement_algorithm_time}
 \end{figure}
@@ -513,9 +514,9 @@ IoTDB在数据写入阶段会生成并保存最值、总和等一系列元数据
 \begin{figure}
   \centering
   \subcaptionbox{运输车GPS轨迹数据集\label{fig:truck_write}}
-  {\includegraphics[width=0.43\linewidth]{truck_iotdb_write.png}}
+  {\includegraphics[width=0.49\linewidth]{truck_iotdb_write.png}}
   \subcaptionbox{挖掘机工况数据集\label{fig:excavator_write}}
-  {\includegraphics[width=0.43\linewidth]{excavator_iotdb_write.png}}
+  {\includegraphics[width=0.49\linewidth]{excavator_iotdb_write.png}}
   \caption{不同数据量下基于UDF和基于元数据的算法写入性能对比}
   \label{fig:iotdb_write}
 \end{figure}
@@ -523,9 +524,9 @@ IoTDB在数据写入阶段会生成并保存最值、总和等一系列元数据
 \begin{figure}
 \centering
 \subcaptionbox{运输车GPS轨迹数据集\label{fig:truck_query}}
-{\includegraphics[width=0.43\linewidth]{truck_iotdb_query.png}}
+{\includegraphics[width=0.49\linewidth]{truck_iotdb_query.png}}
 \subcaptionbox{挖掘机工况数据集\label{fig:excavator_query}}
-{\includegraphics[width=0.43\linewidth]{excavator_iotdb_query.png}}
+{\includegraphics[width=0.49\linewidth]{excavator_iotdb_query.png}}
 \caption{不同数据量下基于UDF和基于元数据的算法查询性能对比}
 \label{fig:iotdb_query}
 \end{figure}

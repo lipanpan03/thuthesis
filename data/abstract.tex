@@ -3,13 +3,15 @@
 % 中英文摘要和关键字
 
 \begin{abstract}
-  随着信息化和工业化的融合，物联网和工业互联网蓬勃发展，
-  由此产生了以时间序列为代表的大量工业大数据。
-  时间序列中蕴含着很多有价值的模式，对称模式作为一种
-  具有前后对应特征的时序模式，在各类时间序列中广泛存在。
-  挖掘对称模式在行为分析、轨迹跟踪、异常检测等领域具有重要的
-  研究价值。考虑到大规模的时间序列数据给计算资源和运行效率
-  带来的挑战，本文将研究一类时间和空间效率均较为高效的
+  信息技术和工业经济的融合催生出了智能化和数字化的现代工业，
+  同时也产生了规模庞大的工业数据。
+  时间序列是一种典型的工业大数据，蕴含着丰富的
+  规律和模式。其中，对称模式作为一种
+  具有前后对应特征的时序模式，广泛分布于多种时间序列之中。
+  挖掘对称模式在轨迹分析、异常识别和序列预测等领域具有重要的
+  研究价值。然而，工业时间序列的随机误差和超大数据量给对称模式
+  的挖掘带来了困难。基于此，
+  本文研究了一类时间和空间效率均较为高效的
   对称模式挖掘方法来应对上述问题。
 
   % 再度量子序列的对称性
@@ -27,7 +29,7 @@
   对称模式分为全局对称模式和分段对称模式。
   对于全局对称模式而言，准确的对称性度量算法是其关节所在。
   欧氏距离度量是一种简单而有效的方法，
-  但是其一一对应的点匹配策略，对时间序列
+  但其一一对应的点匹配策略，对时间序列
   偏移、缺失和形状变化比较敏感。
   本文提出了一个基于最优匹配和自适应阈值的
   全局对称模式挖掘算法，对时间序列各类异常具有很好的鲁棒性。
@@ -40,10 +42,10 @@
 
   分段对称模式挖掘除了要度量对称性并确定阈值，
   还需要对时间序列进行分段处理并解决子模式重叠问题。
-  因此，基于区间动态规划算法思想，
-  结合滑动窗口模型和贪心策略，本文提出了一种能够
-  在$O\left( \left| X \right| \times w \right)$的
-  时间复杂度内挖掘出分段对称模式的方法。
+  因此，根据区间动态规划算法思想，
+  结合滑动窗口模型和贪心策略，本文设计了一种渐进时间复杂度为
+  $O\left( \left| X \right| \times w \right)$的
+  分段对称模式挖掘算法。
   经过实验证明，
   本文提出的分段算法不但保持了模式挖掘效果的准确性，
   而且相比基于动态时间扭曲的算法在效率上
@@ -62,26 +64,26 @@
   
   % 关键词用“英文逗号”分隔，输出时会自动处理为正确的分隔符
   \thusetup{
-    keywords = {时间序列, 对称模式, 相似性度量, 动态规划},
+    keywords = {时间序列, 相似性度量, 对称模式, 动态规划},
   }
 \end{abstract}
 
 \begin{abstract*}
-  With the integration of informatization and 
-  industrialization, the Internet of Things and 
-  the Industrial Internet have flourished, resulting in a 
-  large amount of industrial big data represented by time 
-  series. There are many valuable patterns in time series. 
-  Symmetric pattern, as a time series pattern with 
-  corresponding features before and after, widely exists 
-  in all kinds of time series. Mining symmetric patterns 
-  has important research value in behavior analysis, 
-  trajectory tracking, anomaly detection and other fields. 
-  Considering the challenges brought by large-scale time 
-  series data to computing resources and operational 
-  efficiency, this paper will study a class of symmetric 
-  pattern mining methods that are efficient in both time 
-  and space to deal with the above problems.
+  The integration of information technology and industrial 
+  economy has given birth to intelligent and digitized 
+  modern industries, as well as large-scale industrial 
+  data. Time series is a typical industrial big data, 
+  which contains rich laws and patterns. Among them, 
+  the symmetric pattern is widely distributed in various 
+  time series as a time series pattern with front and back 
+  correspondence characteristics. Mining symmetric patterns 
+  has important research value in the fields of trajectory 
+  analysis, anomaly identification and sequence prediction. 
+  However, the random errors and large data volumes of 
+  industrial time series bring difficulties to the mining 
+  of symmetric patterns. Based on this, this paper studies 
+  a class of time- and space-efficient symmetric pattern 
+  mining methods to deal with the above problems.
 
   Symmetric patterns are divided into global symmetric 
   patterns and segmented symmetric patterns. For global 
@@ -105,14 +107,14 @@
   mining in big data.
 
   In addition to measuring symmetry and determining 
-  thresholds, segmented symmetric pattern mining also 
-  needs to segment the time series and solve the subpattern 
-  overlap problem. Therefore, based on the idea of the 
-  interval dynamic programming algorithm, combined with 
-  the sliding window model and the greedy strategy, 
-  this paper proposes a method that can mine segmented 
-  symmetric patterns in the time complexity 
-  of $O\left( \left| X \right| \times w \right)$. 
+  thresholds, segmented symmetric pattern mining 
+  also needs to segment the time series and solve 
+  the subpattern overlap problem. Therefore, 
+  according to the idea of interval dynamic programming 
+  algorithm, combined with sliding window model and greedy 
+  strategy, this paper designs a segmented symmetric pattern
+  mining algorithm with asymptotic time 
+  complexity $O\left( \left| X \right| \times w \right)$.
   Experiments show that the segmented algorithm proposed 
   in this paper not only maintains the accuracy of the 
   pattern mining effect, but also improves the efficiency 
