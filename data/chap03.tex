@@ -77,7 +77,7 @@ $(106.89,106.9)$范围内，而FSR信号在$(-4000,-1000)$范围内。
 的问题，但是，这种方法实际上是将时间序列对称中心两侧的子序列进行了
 两次匹配，不仅降低了对称性度量算法的时间效率，还增大了对称性的度量结果。
 图~\ref{fig:beijing_temp}展示了北京市自1981年至2010年月平均气温的变化，显然，
-气温时间序列具有对称性。但是，经计算，原始和反转时间序列的欧式距离为
+气温时间序列具有对称性。但是，经计算，原始和反转时间序列的欧氏距离为
 278.04，而使用本文所提出的对称性度量方法，气温时间序列的对称度仅为
 7.6，更加符合真实的时间序列对称性结果。因此，本文定义了一种新的基于
 动态时间扭曲算法和区间动态规划思想的对称性
@@ -108,7 +108,7 @@ $X=\left(\left(t_1,x_1 \right),\left(t_2,x_2\right),\dots,
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.66\linewidth]{frontend_match.png}
+  \includegraphics[width=0.76\linewidth]{frontend_match.png}
   \caption{对称时间序列首尾匹配候选点}
   \label{fig:frontend_match}
 \end{figure}
@@ -245,7 +245,7 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 先验阈值。例如，在运输车行驶往返形成的时间序列数据中，
 由于车道变换导致的相同位置经度变化不会超过0.0001度，
 此经验信息可以用为对称模式匹配过程中的单点匹配误差阈值。
-尽管使用经验阈值的方式可以高效的对时间序列对称模式进行分类，
+尽管使用经验阈值的方式可以高效地对时间序列对称模式进行分类，
 但并不是所有来源的数据集都有明确的经验阈值，或者其阈值
 只是一个较为模糊的范围，不具有进行对称模式分类的作用。
 因此，需要设计一种不依赖于领域知识的对称度阈值确定算法。
@@ -373,7 +373,7 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
   \label{fig:shanghai_point}
 \end{figure}
 
-\subsection{流式时间序列对称性度量}
+\subsection{流式时间序列对称性度量算法}
 流式时间序列是一组顺序、大量、快速且连续到达的时间序列数据
 \cite{DBLP:conf/apweb/KangWWDW18}。
 一般情况下，时间序列数据流可被视为一个随时间延续而无限增长的
@@ -425,7 +425,7 @@ $S$从$p_{1}$到$p_{t-1}$之间的对称度状态$DP\left(i,j\right)$
 相比通过计算原始和反转时间序列的相似性度量对称性的算法大大降低了时间复杂度。
 \begin{figure}
   \centering
-  \includegraphics[width=0.86\linewidth]{latitude_stream_matrix.png}
+  \includegraphics[width=0.92\linewidth]{latitude_stream_matrix.png}
   \caption{运煤车纬度变化与对称度状态转移过程}
   \label{fig:latitude_stream_matrix}
 \end{figure}
@@ -456,7 +456,7 @@ $p_t$的相关状态后，用新计算得到的$dp$更新旧有$dp$即可，
 算法~\ref{alg:streaming_symmetric_pattern}
 展示了时间序列对称模式流式挖掘算法
 的计算流程，第1-16行在$O(t)$的时间内
-流式计算以与点$p_t$相关的全局对称度状态$dp$，
+流式计算与点$p_t$相关的全局对称度状态$dp$，
 并更新对称度阈值$\theta_1$，
 第17行把新数据点放入流式时间序列$X$，
 第18-22行

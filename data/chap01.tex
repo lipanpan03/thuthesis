@@ -42,22 +42,22 @@
 除此之外，由于物理设备、数据采集和数据传输
 中遇到的问题，实际应用场景中的时间序列可能不是等间隔采样的，导致不同阶段
 的数据点密度不一致，这种情况同样会造成对称中心点的不确定性。
-\begin{figure}[t]
+\begin{figure}
   \centering
-  \includegraphics[width=0.86\linewidth]{symmetric_string.png}
+  \includegraphics[width=0.76\linewidth]{symmetric_string.png}
   \caption{对称字符串序列}
   \label{fig:symmetric_string}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}
   \centering
-  \includegraphics[width=0.86\linewidth]{no_symmetic_center.png}
+  \includegraphics[width=0.76\linewidth]{no_symmetic_center.png}
   \caption{对称时间序列反映无严格对称中心的案例}
   \label{fig:no_symmetic_center}
 \end{figure}
 
 此外，由于采样频率不同以及数据随机性较大，时间序列在对称性匹配过程中
-不可避免的存在一些失配现象\cite{DBLP:journals/corr/abs-2202-05403}。
+不可避免地存在一些失配现象\cite{DBLP:journals/corr/abs-2202-05403}。
 图~\ref{fig:mismatch}展示了某辆挖掘机
 在作业过程中动臂提升工况的变化示意图，该序列为一次挖掘作业的动臂提升工况
 时间序列，具有物理上的对称性。然而，由于抬臂阶段产生了红框所示的数据采集
@@ -78,16 +78,16 @@
 全局数据特征挖掘时间序列的对称性。
 \begin{figure}
   \centering
-  \includegraphics[width=0.80\linewidth]{mismatch.png}
+  \includegraphics[width=0.76\linewidth]{mismatch.png}
   \caption{对称时间序列反映随机失配现象的案例}
   \label{fig:mismatch}
 \end{figure}
 \begin{figure}
   \centering
   \subcaptionbox{一一对应\label{fig:time_series_align-a}}
-    {\includegraphics[width=0.48\linewidth]{time_series_align-a.png}}
+    {\includegraphics[width=0.49\linewidth]{time_series_align-a.png}}
   \subcaptionbox{全局匹配\label{fig:time_series_align-b}}
-    {\includegraphics[width=0.48\linewidth]{time_series_align-b.png}}
+    {\includegraphics[width=0.49\linewidth]{time_series_align-b.png}}
   \caption{对称时间序列反映不对齐现象的案例}
   \label{fig:time_series_align}
 \end{figure}
@@ -95,7 +95,7 @@
 全局时间序列对称模式的挖掘需要立足于时间序列的整体数据特征。
 然而，时间序列中可能蕴含着具有对称性的子模式。
 图~\ref{fig:segement_symmetric_pattern}展示了在挖掘机
-作业过程中斗臂外摆工况变化形成的时间序列。在该案例中，
+作业过程中斗杆外摆工况变化形成的时间序列。在该案例中，
 多种对称子模式聚合在一条长时间序列之中，
 由于传感器采样和数据传输的问题，存在包括
 缺失点、异常点、噪声点等诸多问题\cite{DBLP:conf/sigmod/SongZWY15}，
@@ -106,7 +106,7 @@
 从而导致后续数据分析和统计存在误差。
 \begin{figure}
   \centering
-  \includegraphics[width=0.86\linewidth]{global_symmetry.png}
+  \includegraphics[width=0.76\linewidth]{global_symmetry.png}
   \caption{分段挖掘时间序列对称子模式的案例}
   \label{fig:segement_symmetric_pattern}
 \end{figure}
@@ -190,7 +190,7 @@
 
 \section{论文组织结构}
 
-本文由7个章节构成，下面列出了每个章节所介绍的内容:
+本文由7个章节构成，下面列出了每个章节所介绍的内容：
 
 第 1 章为引言部分，主要介绍了时间序列的数据特点和
 对称模式挖掘的挑战，在此基础上指出了全局和分段对称模式
