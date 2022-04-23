@@ -134,7 +134,7 @@ GunPointAgeSpan数据集上度量135条时间序列得到的平均对称度
 从侧面证明了本文提出的对称度阈值算法的重要性。
 \begin{figure}
   \centering
-  \includegraphics[width=0.76\linewidth]{symmetry.pdf}
+  \includegraphics[width=0.76\linewidth]{symmetric_dataset_symmetry.PNG}
   \caption{对称数据集上不同算法的全局对称性度量结果}
   \label{fig:symmetry_compare}
 \end{figure}
@@ -243,7 +243,7 @@ symmetry算法挖掘对称模式的准确率远高于其他算法。
 的匹配方式。
 \begin{figure}
   \centering
-  \includegraphics[width=0.76\linewidth]{accuracy.pdf}
+  \includegraphics[width=0.76\linewidth]{symmetry_accuracy.PNG}
   \caption{不同全局对称模式挖掘算法的准确率结果}
   \label{fig:accuracy_compare}
 \end{figure}
@@ -263,7 +263,7 @@ F值就是用来综合评估算法的精确率和召回率。在实验中，本�
 算法的F值要远高于其他算法，证明了全局对称模式挖掘算法的有效性。
 \begin{figure}
   \centering
-  \includegraphics[width=0.76\linewidth]{f-score.pdf}
+  \includegraphics[width=0.76\linewidth]{f-score.PNG}
   \caption{不同对称模式挖掘算法的F-Score结果}
   \label{fig:fscore_compare}
 \end{figure}
@@ -536,7 +536,7 @@ IoTDB在数据写入阶段会生成并保存最值、总和等一系列元数据
 的写入和查询性能进行了实验，实验结果如图~\ref{fig:iotdb_write}
 和~\ref{fig:iotdb_query}所示。
 从图中可以看出，尽管基于元数据的分段算法写入性能略有下降，
-但其查询分析性能却是基于UDF算法的上百倍。证明了基于
+但其查询分析性能却是基于UDF算法的数十倍。证明了基于
 元数据的分段算法在查询负载较重的场景中具有重要的研究价值。
 
 \section{本章小结}
