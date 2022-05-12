@@ -33,45 +33,9 @@
 % 分类得到对称子序列，
 % 最后根据挖掘数量最多不重叠对称子序列的贪心策略挖掘出对称模式。
 
-在对时间序列的对称性进行度量之前，需要执行一步非常重要的操作，
-数据归一化\cite{DBLP:journals/tec/HeITWNS21}。
-由于不同来源的时间序列
-数据范围往往差距很大，图~\ref{fig:data_range}展示了运输车运输过程中的经度工况时间序列和
-有规律心跳过程中力感测电阻器（FSR）信号的变化时间序列，运输车经度的在
-$(106.88,106.9)$范围内，而FSR信号在$(-4000,-1000)$范围内。
-除了范围之外，很明显，两个数据来源的数据跨度差别也很大。
-为使用统一的算法框架进行对称模式挖掘，需要对数据进行标准化处理。
-对时间序列$X=\left(\left(t_{1}, x_{1}\right),\left(t_{2}, x_{2}\right), \ldots,\left(t_{n}, x_{n}\right)\right)$
-的每个数据点，首先根据公式~\ref{eq:mu}计算数据点的平均值，
-再根据公式~\ref{eq:sigma}计算数据点的标准差，
-最后按照公式~\ref{eq:standard}对时间序列X中所有的数据点进行标准化。
-使用z-score方法进行标准化，不仅在无量纲化过程中利用了所有的数据信息，
-还消除了各变量在变异程度上的差异，方便提出统一的对称度阈值确定算法。
-\begin{equation}
-  \mu=\frac{\sum_{i=1}^{i=n} x_{i}}{n}
-  \label{eq:mu}
-\end{equation}
-\begin{equation}
-  \sigma=\sqrt[2]{\frac{\sum_{i=1}^{i=n}\left(x_{i}-\mu\right)^{2}}{n}}
-  \label{eq:sigma}
-\end{equation}
-\begin{equation}
-  y_{i}=\frac{x_{i}-\mu}{\sigma}
-  \label{eq:standard}
-\end{equation}
-\begin{figure}
-  \centering
-  \subcaptionbox{挖掘机经度\label{fig:data_range-a}}
-  {\includegraphics[width=0.49\linewidth]{truck_lo.png}}
-  \subcaptionbox{心率FSR信号\label{fig:data_range-b}}
-  {\includegraphics[width=0.49\linewidth]{heart_fsr.png}}
-  \caption{不同来源时间序列数据分布范围}
-  \label{fig:data_range}
-\end{figure}
+\section{时间序列全局对称性度量算法}
 
-\section{全局时间序列对称性度量算法}
-
-对于全局时间序列而言，使用原始时间序列和其反转时间序列的相似性来度量对称性，
+对于时间序列整体而言，使用原始时间序列和其反转时间序列的相似性来度量全局对称性，
 是一种可行的时间序列对称性度量方法。此方法的好处是可以避免确定对称中心
 的问题，但是，这种方法实际上是将时间序列对称中心两侧的子序列进行了
 两次匹配，不仅降低了对称性度量算法的时间效率，还增大了对称性的度量结果。
@@ -107,7 +71,7 @@ $X=\left(\left(t_1,x_1 \right),\left(t_2,x_2\right),\dots,
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.76\linewidth]{frontend_match.png}
+  \includegraphics[width=0.70\linewidth]{frontend_match.png}
   \caption{对称时间序列首尾匹配候选点}
   \label{fig:frontend_match}
 \end{figure}
@@ -248,7 +212,44 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 尽管使用经验阈值的方式可以高效地对时间序列对称模式进行分类，
 但并不是所有来源的数据集都有明确的经验阈值，或者其阈值
 只是一个较为模糊的范围，不具有进行对称模式分类的作用。
-因此，需要设计一种不依赖于领域知识的对称度阈值确定算法。
+
+为了降低不同来源时间序列的数据范围差异给对称度阈值确定带来的难度，
+用户可以对时序数据进行标准化处理。
+标准化处理要求对时间序列$X=\left(\left(t_{1}, x_{1}\right),\left(t_{2}, x_{2}\right), \ldots,\left(t_{n}, x_{n}\right)\right)$
+的每个数据点，首先根据公式~\ref{eq:mu}计算数据点的平均值，
+再根据公式~\ref{eq:sigma}计算数据点的标准差，
+最后按照公式~\ref{eq:standard}对时间序列X中所有的数据点进行标准化。
+尽管标准化处理在一定程度上消除了各变量在变异程度上的差异，
+但并不能对所有来源的数据集确定统一的对称度阈值。
+图~\ref{fig:symmetry_diff}展示了对来自UCR的持枪动作位置和
+实验室合成信号时间序列进行标准化处理的结果。
+尽管两条时间序列均具有物理上的对称性，属于全局对称模式，也都经过
+了标准化处理，但通过3.1节全局对称性度量算法计算，
+持枪动作位置时间序列的对称度为0.025，
+而实验室合成信号时间序列的对称度为0.01，两者差距较大。
+因此，需要设计一种不依赖于领域知识和预处理操作的对称度阈值确定算法。
+\begin{equation}
+  \mu=\frac{\sum_{i=1}^{i=n} x_{i}}{n}
+  \label{eq:mu}
+\end{equation}
+\begin{equation}
+  \sigma=\sqrt[2]{\frac{\sum_{i=1}^{i=n}\left(x_{i}-\mu\right)^{2}}{n}}
+  \label{eq:sigma}
+\end{equation}
+\begin{equation}
+  y_{i}=\frac{x_{i}-\mu}{\sigma}
+  \label{eq:standard}
+\end{equation}
+
+\begin{figure}
+  \centering
+  \subcaptionbox{标准化持枪手势时间序列\label{fig:symmetry_diff_gun}}
+  {\includegraphics[width=0.43\linewidth]{symmetry_diff_gun.PNG}}
+  \subcaptionbox{标准化合成信号时间序列\label{fig:symmetry_diff_umd}}
+  {\includegraphics[width=0.43\linewidth]{symmetry_diff_umd.PNG}}
+  \caption{不同来源对称时间序列对称度差异}
+  \label{fig:symmetry_diff}
+\end{figure}
 
 考虑到对称度本质上是时间序列前后匹配得到的
 自相似性结果，因此，对称度阈值必然和时间序列本身的
@@ -258,20 +259,8 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 匹配点的差异可能就特别大，因此，对称度阈值也需要
 设定的较大。然而，影响对称度阈值高低的关键因素不是标准差
 代表的整体时间序列的差异程度，而是匹配点之间的差异程度。
-图~\ref{fig:symmetry_diff}展示了标准化后正弦曲线和
-河北某县气温的变化时间序列，
-两者都是对称时间序列。然而，尽管两者的标准差都是1，
-但因为正弦时间序列完美匹配而气温时间序列匹配存在误差，
-所以前者的对称度为0，而后者的对称度为0.7。
-\begin{figure}
-  \centering
-  \subcaptionbox{标准化正弦时间序列\label{fig:symmetry_diff_sin}}
-  {\includegraphics[width=0.43\linewidth]{symmetry_diff_sin.png}}
-  \subcaptionbox{标准化气温时间序列\label{fig:symmetry_diff_temp}}
-  {\includegraphics[width=0.43\linewidth]{symmetry_diff_temp.png}}
-  \caption{不同来源对称时间序列对称度差异}
-  \label{fig:symmetry_diff}
-\end{figure}
+图~\ref{fig:symmetry_diff}展示的两条时间序列均经过标准化操作，
+标准差都是1，但两者的对称度却不同。
 
 因此，要根据时间序列点匹配的情况确定对称度阈值。然而，
 根据时间序列匹配点之间的距离确定对称阈值具有极大的随机性。
@@ -304,7 +293,7 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
 
 \section{挖掘全局对称模式}
 通过全局对称性度量算法计算得到时间序列的对称度之后，就可以
-使用领域知识和自定义算法确定的对称度阈值对模式进行分类。
+使用领域知识或自定义算法确定的对称度阈值对模式进行分类。
 在未指定先验阈值的情况下，如果根据公式~\ref{eq:threshold1}
 计算得到的对称度阈值为$\theta_1$，那么，本文所要挖掘的对称模式
 即是满足公式~\ref{eq:global_symmetry}的时间序列。
@@ -336,7 +325,7 @@ $X$的子序列$S=\left(p_{i}, p_{i+1}, \dots, p_{j}\right)$的对称度，
     \STATE minus $\leftarrow$ minus $+D\left(p_{i}, p_{i+1}\right)$
     \STATE $i \leftarrow i+1$
     \ENDWHILE
-    \STATE $\theta_1 \leftarrow frac{minus}{n-1}$
+    \STATE $\theta_1 \leftarrow \frac{minus}{n-1}$
     \IF{$d \leq \theta_1 $}
       \RETURN true
     \ELSE
@@ -453,21 +442,6 @@ $p_t$的相关状态后，用新计算得到的$dp$更新旧有$dp$即可，
 对于所有的流式全局时间序列$X$，比较其对称度和阈值的数量关系，
 输出其是否属于全局对称模式。
 
-算法~\ref{alg:streaming_symmetric_pattern}
-展示了时间序列对称模式流式挖掘算法
-的计算流程，第1-16行在$O(t)$的时间内
-流式计算与点$p_t$相关的全局对称度状态$dp$，
-并更新对称度阈值$\theta_1$，
-第17行把新数据点放入流式时间序列$X$，
-第18-22行
-并通过比较流式全局对称度是否超过对称度阈值，判断是否为对称模式。
-分析可知，当每个新数据点到来时，
-全局对称模式流式挖掘算法的时间和空间复杂度均为$O(t)$，
-远远低于每次都重新计算DTW距离以度量对称性的算法，
-具有较高的时间效率和较快的响应速度。
-此外，根据第4章的研究，流式挖掘算法很容易扩展到分段对称模式挖掘领域，
-在结合IoTDB系统实现时具有重要的应用价值。
-
 \renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
 \renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
 
@@ -503,6 +477,21 @@ $p_t$的相关状态后，用新计算得到的$dp$更新旧有$dp$即可，
     \ENDIF
   \end{algorithmic}
 \end{algorithm}
+
+算法~\ref{alg:streaming_symmetric_pattern}
+展示了时间序列对称模式流式挖掘算法
+的计算流程，第1-16行在$O(t)$的时间内
+流式计算与点$p_t$相关的全局对称度状态$dp$，
+并更新对称度阈值$\theta_1$，
+第17行把新数据点放入流式时间序列$X$，
+第18-22行
+并通过比较流式全局对称度是否超过对称度阈值，判断是否为对称模式。
+分析可知，当每个新数据点到来时，
+全局对称模式流式挖掘算法的时间和空间复杂度均为$O(t)$，
+远远低于每次都重新计算DTW距离以度量对称性的算法，
+具有较高的时间效率和较快的响应速度。
+此外，根据第4章的研究，流式挖掘算法很容易扩展到分段对称模式挖掘领域，
+在结合IoTDB系统实现时具有重要的应用价值。
 
 \section{本章小结}
 本章主要介绍了全局时间序列对称模式挖掘的整体框架和算法细节。

@@ -18,7 +18,7 @@
 4.4节分析了基于IoTDB数据库实现分段对称模式挖掘算法
 的两种方式，并对比了这两种方式的优劣和适用场景。
 
-\section{分段时间序列对称性度量算法}
+\section{时间序列分段对称性度量算法}
 要对时序数据进行对称子序列的挖掘，首先要做的就是把时间序列划分成
 一段一段的子序列，然后对子序列进行对称性度量。
 时间序列断点检测算法是一种经典的时间子序列划分方法\cite{DBLP:conf/igarss/UrbanHZMGBMMFRH21}。
@@ -88,7 +88,7 @@ $2 \times|X| \times w-w^{2}+w$个状态。
 给定时间序列X和子序列的长度约束$w$，可以在$O(|X| \times w)$的时间内
 计算出所有的子序列对称度。然而，如果想判别出真正的对称时间子序列，
 还需要至关重要的一步——确定分段对称度阈值。
-图~\ref{fig:lontitude_symmetry}展示了运输车经度标准化处理后的时间序列和对应的分段对称度变化情况。
+图~\ref{fig:lontitude_symmetry}展示了运输车经度时间序列和对应的分段对称度变化情况。
 一般工业场景中，对称度阈值往往是由领域专家输入的。但是，并非所有的
 应用场景中都能找到专业的领域专家。并且，如果对称度阈值提供的不合适，
 将极大地影响对称模式的挖掘。因此，本节提出了一个基于时间序列数据特征
@@ -96,7 +96,7 @@ $2 \times|X| \times w-w^{2}+w$个状态。
 \begin{figure}
   \centering
   \includegraphics[width=0.76\linewidth]{std_lo_symmetry.png}
-  \caption{标准化经度分段对称度变化}
+  \caption{运输车经度分段对称度变化}
   \label{fig:lontitude_symmetry}
 \end{figure}
 
