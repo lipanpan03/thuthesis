@@ -6,140 +6,150 @@
   信息技术和工业经济的融合催生出了智能化和数字化的现代工业，
   同时也产生了规模庞大的工业数据。
   时间序列是一种典型的工业大数据，蕴含着丰富的
-  规律和模式。其中，对称模式作为一种
-  具有前后对应特征的时序模式，广泛分布于多种时间序列之中。
-  挖掘对称模式在轨迹分析、异常识别和序列预测等领域具有重要的
-  研究价值。然而，工业时间序列的随机误差和超大数据量给对称模式
-  的挖掘带来了困难。基于此，
+  规律和知识。其中，对称子段作为一种
+  具有前后对应特征的时序子段，广泛分布于多种时间序列之中。
+  挖掘对称子段在轨迹分析、异常识别和序列预测等领域具有重要的
+  研究价值。然而，工业时间序列的随机误差和超大数据量给
+  对称子段的挖掘带来了困难。基于此，
   本文研究了一类时间和空间效率均较为高效的
-  对称模式挖掘方法来应对上述问题。
+  对称子段挖掘算法来应对上述问题。
 
   % 再度量子序列的对称性
   % 对称模式涉及到时间序列的对比与匹配。
   % 因此，时间序列的相似性度量对
   % 对称模式挖掘算法的效果和性能具有决定性作用。
-  % 一种简单的序列相似性度量方法是欧式距离。
+  % 一种简单的序列相似性度量算法是欧式距离。
   % 但是欧氏距离采用一一对应的点匹配策略，
   % 对时间序列偏移、缺失和形状变化等比较敏感。
   % 动态时间扭曲（DTW）通过弯曲时间序列使得每个点有多个匹配候选，
-  % 从而提高了相似性度量方法的鲁棒性。
+  % 从而提高了相似性度量算法的鲁棒性。
   % 但工业应用中时间序列的数据量往往高达几十甚至上百GB，
-  % 动态时间扭曲方法的计算效率堪忧。
+  % 动态时间扭曲算法的计算效率堪忧。
 
-  对称模式分为全局对称模式和分段对称模式。
-  对于全局对称模式而言，准确的对称性度量算法是其关节所在。
-  欧氏距离度量是一种简单而有效的方法，
+  对称子段判定算法是解决对称子段挖掘问题的基础。
+  对于对称子段判定问题，准确的对称性度量算法是其关节所在。
+  欧氏距离度量是一种简单而有效的算法，
   但其一一对应的点匹配策略，对时间序列
   偏移、缺失和形状变化比较敏感。
   本文提出了一个基于最优匹配和自适应阈值的
-  全局对称模式挖掘算法，对时间序列各类异常具有很好的鲁棒性。
-  经过实验证明，本方法在
-  对称模式挖掘效果上超过了
-  利用欧氏距离和动态时间扭曲度量对称性的方法。并且，
-  本文还通过优化对称度计算方式将全局对称模式挖掘算法扩展到了
+  对称子段判定算法，对时间序列各类异常具有很好的鲁棒性。
+  经过实验证明，本算法在
+  对称子段判定效果上超过了
+  利用欧氏距离和动态时间扭曲度量对称性的算法。并且，
+  本文还通过优化对称度计算方式将对称子段判定算法扩展到了
   流式时间序列，在保证时间性能的同时，将算法的空间复杂度
-  优化至了$O(n)$，为对称模式挖掘在大数据上的应用提供了可能。
+  优化至了$O(n)$，为对称子段判定在大数据上的应用提供了可能。
 
-  分段对称模式挖掘除了要度量对称性并确定阈值，
-  还需要对时间序列进行分段处理并解决子模式重叠问题。
+  对称子段挖掘除了要对子段对称性进行判定，
+  还需要对时间序列进行分段处理并解决子段重叠问题。
   因此，根据区间动态规划算法思想，
   结合滑动窗口模型和贪心策略，本文设计了一种渐进时间复杂度为
   $O\left( \left| X \right| \times w \right)$的
-  分段对称模式挖掘算法。
+  对称子段挖掘算法。
   经过实验证明，
-  本文提出的分段算法不但保持了模式挖掘效果的准确性，
+  本文提出的算法不但保持了对称子段挖掘效果的准确性，
   而且相比基于动态时间扭曲的算法在效率上
   有了100倍以上的提升。
-  此外，根据IoTDB的存储和计算方式，本文实现了基于
-  UDF和元数据的两种分段算法，分别适用于写入和查询负载较重
-  的应用场景，在系统层面对分段对称模式挖掘算法进行了扩展。
+  此外，根据IoTDB的存储和计算方式，本文设计了基于
+  UDF和元数据的两种算法实现，分别适用于写入和查询负载较重
+  的应用场景，在系统层面对对称子段挖掘算法进行了扩展。
 
-  通过对全局和分段对称模式挖掘算法的研究与实验，我们发现，
-  本文提出的方法不仅在挖掘效果上具有很好的准确性和鲁棒性，
+  通过对对称子段判定和挖掘算法的研究与实验，我们发现，
+  本文提出的算法不仅在挖掘效果上具有很好的准确性和鲁棒性，
   在性能上也高于基于动态时间扭曲的算法，
   而且在复杂应用场景有很好的可扩展性。
-  最后，本文在IoTDB系统上实现了对称模式挖掘算法，
-  完善了IoTDB挖掘特定时间序列模式的功能，
+  最后，本文在IoTDB系统上实现了对称子段判定和挖掘算法，
+  完善了IoTDB挖掘时间序列特定类型子段的功能，
   为用户数据分析提供有价值的信息。
   
   % 关键词用“英文逗号”分隔，输出时会自动处理为正确的分隔符
   \thusetup{
-    keywords = {时间序列, 相似性度量, 对称模式, 动态规划},
+    keywords = {时间序列, 相似性度量, 对称子段, 动态规划},
   }
 \end{abstract}
 
 \begin{abstract*}
-  The integration of information technology and industrial 
-  economy has given birth to intelligent and digitized 
-  modern industries, as well as large-scale industrial 
-  data. Time series is a typical industrial big data, 
-  which contains rich laws and patterns. Among them, 
-  the symmetric pattern is widely distributed in various 
-  time series as a time series pattern with front and back 
-  correspondence characteristics. Mining symmetric patterns 
-  has important research value in the fields of trajectory 
-  analysis, anomaly identification and sequence prediction. 
-  However, the random errors and large data volumes of 
+  The integration of information technology and 
+  industrial economy has given birth to intelligent 
+  and digital modern industries, as well as 
+  large-scale industrial data. Time series is a 
+  typical industrial big data, which contains rich 
+  laws and knowledge. Among them, the symmetric 
+  subsegment, as a type of time series subsegment 
+  with corresponding features before and after, 
+  is widely distributed in various time series. 
+  Mining symmetric subsegments has important research 
+  value in the fields of trajectory analysis, 
+  anomaly identification and sequence prediction. 
+  However, the random errors and large data volume of 
   industrial time series bring difficulties to the mining 
-  of symmetric patterns. Based on this, this paper studies 
-  a class of time- and space-efficient symmetric pattern 
-  mining methods to deal with the above problems.
+  of symmetric subsegments. Based on this, this paper 
+  studies a type of symmetric subsegment mining 
+  methods that are both efficient in time and space 
+  to deal with the above problems.
 
-  Symmetric patterns are divided into global symmetric 
-  patterns and segmented symmetric patterns. For global 
-  symmetric patterns, an accurate symmetry measure algorithm 
-  is where the joints lie. The Euclidean distance metric 
-  is a simple and effective method, but its one-to-one 
-  correspondence point matching strategy is sensitive to 
-  time series offset, missing and shape changes. This paper 
-  proposes a global symmetric pattern mining algorithm based 
-  on optimal matching and adaptive threshold, which has good 
+  Symmetric subsegment judgment algorithm is the 
+  basis to solve the problem of symmetric subsegment 
+  mining. For the symmetric subsegment judgment problem, 
+  the accurate symmetry measurement algorithm is 
+  where its joints are located. Euclidean distance 
+  metric is a simple and effective method, but its 
+  one-to-one correspondence point matching strategy 
+  is sensitive to time series offset, missing and 
+  shape changes. In this paper, a symmetric subsegment 
+  judgment algorithm based on optimal matching and 
+  adaptive threshold is proposed, which has good 
   robustness to various anomalies in time series. 
-  Experiments show that this method surpasses the method of 
-  using Euclidean distance and dynamic time warp to measure 
-  symmetry in the effect of symmetric pattern mining. In 
-  addition, this paper also extends the global symmetric 
-  pattern mining algorithm to streaming time series by 
-  optimizing the calculation method of symmetry degree. 
-  While ensuring the time performance, the space complexity 
-  of the algorithm is optimized to $O(n)$, which provides 
-  the possibility for the application of symmetric pattern 
-  mining in big data.
+  Experiments show that this method surpasses the 
+  method of using Euclidean distance and dynamic 
+  time warping to measure symmetry in judging the 
+  effect of symmetric subsegemnts. In addition, 
+  this paper also extends the symmetric subsegment 
+  judgment algorithm to streaming time series 
+  by optimizing the calculation method of symmetry 
+  degree. While ensuring the time performance, 
+  the space complexity of the algorithm is optimized 
+  to $O(n)$, for the symmetric subsegment judgment 
+  in the application of big data provides the 
+  possibility.
 
-  In addition to measuring symmetry and determining 
-  thresholds, segmented symmetric pattern mining 
-  also needs to segment the time series and solve 
-  the subpattern overlap problem. Therefore, 
-  according to the idea of interval dynamic programming 
-  algorithm, combined with sliding window model and greedy 
-  strategy, this paper designs a segmented symmetric pattern
-  mining algorithm with asymptotic time 
-  complexity $O\left( \left| X \right| \times w \right)$.
-  Experiments show that the segmented algorithm proposed 
-  in this paper not only maintains the accuracy of the 
-  pattern mining effect, but also improves the efficiency 
-  by more than 100 times compared with the algorithm 
-  based on dynamic time warping. In addition, 
-  according to the storage and calculation methods of IoTDB, 
-  this paper implements two segmentated algorithms 
-  based on UDF and metadata, which are suitable for 
-  application scenarios with heavy write and 
-  query loads, which extends segmented symmetric 
-  pattern mining algorithm in system level.
+  In addition to judging the symmetry of subsegments, 
+  symmetric subsegment mining also needs to segment 
+  the time series and solve the problem of overlapping 
+  subsegments. Therefore, according to the idea of 
+  interval dynamic programming algorithm, combined 
+  with sliding window model and greedy strategy, 
+  this paper designs a symmetric subsegment mining 
+  algorithm with asymptotic time complexity 
+  $O\left( \left| X \right| \times w \right)$. 
+  Experiments show that the mining algorithm proposed 
+  in this paper not only maintains the accuracy of 
+  the subsegment mining methods, but also improves 
+  the efficiency by more than 100 times compared 
+  with the algorithm based on dynamic time warping. 
+  In addition, according to the storage and computing 
+  methods of IoTDB, this paper implements two mining 
+  algorithms based on UDF and metadata, which are 
+  suitable for application scenarios with heavy write 
+  and query loads respectively, and the symmetric 
+  subsegment mining algorithm is extended at the 
+  system level.
 
-  Through research and experiments on global and 
-  segmented symmetric pattern mining algorithms, 
+  Through the research and experiments on the 
+  symmetric subsegment judgment and mining algorithm, 
   we found that the method proposed in this paper 
-  not only has good accuracy and robustness in mining 
-  effect, but also has higher performance than the 
-  algorithm based on dynamic time warping, 
-  and has good scalability in complex application scenarios. 
-  Finally, this paper implements a symmetric pattern mining 
-  algorithm on the IoTDB system, improves the function 
-  of IoTDB to mine specific time series patterns, 
-  and provides valuable information for user data analysis.
+  not only has good accuracy and robustness in 
+  mining effect, but also has higher performance 
+  than the algorithm based on dynamic time warping. 
+  And it has good scalability in complex application 
+  scenarios. Finally, this paper implements the 
+  symmetric subsegment judgment and mining algorithm 
+  on the IoTDB system, improves the function of IoTDB 
+  to mine specific time series subsegments, and 
+  provides valuable information for user data analysis.
+
   % Use comma as separator when inputting
   \thusetup{
-    keywords* = {time series, symmetric pattern, similarity measure, dynamic programming},
+    keywords* = {time series, symmetric subsegment, similarity measure, dynamic programming},
   }
 \end{abstract*}
